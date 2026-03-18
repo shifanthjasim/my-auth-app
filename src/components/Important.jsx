@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, ProgressBar, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Table } from 'react-bootstrap';
 
 const Important = ({ onBack }) => {
   const [groceries, setGroceries] = useState(() => JSON.parse(localStorage.getItem('sj_groceries')) || []);
   const [events, setEvents] = useState(() => JSON.parse(localStorage.getItem('sj_events')) || []);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update clocks every second for a "live" feel
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -17,14 +16,9 @@ const Important = ({ onBack }) => {
     localStorage.setItem('sj_events', JSON.stringify(events));
   }, [groceries, events]);
 
-  // Helper function to format strings for specific timezones
   const formatTime = (tz) => {
     return currentTime.toLocaleTimeString('en-US', {
-      timeZone: tz,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
+      timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
     });
   };
 
@@ -47,63 +41,77 @@ const Important = ({ onBack }) => {
   };
 
   return (
-    <div className="page-view-wrapper" style={{ paddingTop: '100px' }}>
-      <Container className="py-5">
-        <div className="d-flex align-items-center mb-5">
-          <Button variant="outline-info" className="me-4 rounded-circle back-btn" onClick={onBack}>←</Button>
-          <h2 className="display-4 fw-bold name-gradient mb-0">Important Hub</h2>
+    <div className="page-view-wrapper">
+      <Container className="py-4">
+        {/* TOP HEADER */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center">
+            <Button variant="outline-info" className="me-3 back-btn" onClick={onBack}>BACK</Button>
+            <div>
+              <h2 className="terminal-text mb-0 scanline-text">IMPORTANT_HUB</h2>
+              <span className="small opacity-50 text-uppercase tracking-widest">Command Center // Kandy Node</span>
+            </div>
+          </div>
+          <div className="text-end d-none d-md-block">
+            <div className="blink-dot d-inline-block me-2"></div>
+            <span className="small terminal-text opacity-75">SYSTEM_LIVE</span>
+          </div>
         </div>
 
-        <Row className="g-4">
-          {/* GADGET 1: WASHINGTON D.C. (US Company Time) */}
+        <Row className="g-3">
+          {/* 🕒 TIMEZONE SYNC - TOP ROW */}
           <Col md={6}>
-            <Card className="garden-card h-100 border-info shadow-sm">
-              <Card.Body className="text-center py-4">
-                <h6 className="text-info mb-3 fw-bold letter-spacing-2">WASHINGTON D.C. // EST</h6>
-                <div className="display-4 fw-bold text-info" style={{ textShadow: '0 0 10px rgba(0, 242, 254, 0.5)' }}>
+            <Card className="hud-card">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className="sig-label">U.S. COMPANY SYNC (MARYLAND)</span>
+                  <span className="small text-info">EST</span>
+                </div>
+                <div className="display-5 terminal-text scanline-text text-info">
                   {formatTime('America/New_York')}
                 </div>
-                <p className="small text-white opacity-50 mt-2">Remote Work Sync</p>
               </Card.Body>
             </Card>
           </Col>
 
-          {/* GADGET 2: HAMILTON, NZ (Family Time) */}
           <Col md={6}>
-            <Card className="garden-card h-100 border-primary">
-              <Card.Body className="text-center py-4">
-                <h6 className="text-primary mb-3 fw-bold letter-spacing-2">HAMILTON, NZ // NZDT</h6>
-                <div className="display-4 fw-bold text-primary" style={{ textShadow: '0 0 10px rgba(13, 110, 253, 0.5)' }}>
+            <Card className="hud-card">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className="sig-label">FAMILY CONNECTION (NZ)</span>
+                  <span className="small text-primary">NZDT</span>
+                </div>
+                <div className="display-5 terminal-text scanline-text text-primary">
                   {formatTime('Pacific/Auckland')}
                 </div>
-                <p className="small text-white opacity-50 mt-2">Family Connection</p>
               </Card.Body>
             </Card>
           </Col>
 
-          {/* GADGET 3: UPCOMING EVENTS */}
-          <Col md={7}>
-            <Card className="garden-card h-100">
+          {/* 📅 CRITICAL EVENTS - MAIN AREA */}
+          <Col md={8}>
+            <Card className="hud-card h-100">
               <Card.Body>
-                <h6 className="text-info mb-4">SYSTEM_CRITICAL_EVENTS</h6>
-                <Form onSubmit={addEvent} className="d-flex gap-2 mb-4">
-                  <Form.Control name="title" placeholder="Event" size="sm" className="bg-transparent text-white border-secondary" required />
-                  <Form.Control name="date" type="date" size="sm" className="bg-transparent text-white border-secondary" required />
-                  <Button type="submit" size="sm" variant="info">Add</Button>
+                <h6 className="sig-label mb-4 text-white">CRITICAL_TIMELINE</h6>
+                <Form onSubmit={addEvent} className="row g-2 mb-4">
+                  <Col><Form.Control name="title" placeholder="TASK_ID" className="hud-input" required /></Col>
+                  <Col><Form.Control name="date" type="date" className="hud-input" required /></Col>
+                  <Col xs="auto"><Button type="submit" variant="info" className="px-4">ADD</Button></Col>
                 </Form>
-                <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                  <Table variant="dark" hover size="sm" className="mb-0 border-secondary">
+                
+                <div className="table-responsive" style={{maxHeight: '300px'}}>
+                  <Table className="hud-table" variant="dark">
                     <thead>
                       <tr>
-                        <th className="border-secondary text-muted small">TASK</th>
-                        <th className="border-secondary text-muted small text-end">DEADLINE</th>
+                        <th>OBJECTIVE</th>
+                        <th className="text-end">DEADLINE</th>
                       </tr>
                     </thead>
                     <tbody>
                       {events.map(ev => (
                         <tr key={ev.id}>
-                          <td className="border-secondary text-white">{ev.title}</td>
-                          <td className="border-secondary text-info text-end">{ev.date}</td>
+                          <td className="text-white opacity-75">{ev.title}</td>
+                          <td className="text-info text-end font-monospace">{ev.date}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -113,26 +121,24 @@ const Important = ({ onBack }) => {
             </Card>
           </Col>
 
-          {/* GADGET 4: GROCERY RADAR */}
-          <Col md={5}>
-            <Card className="garden-card h-100">
+          {/* 📦 GROCERY RADAR */}
+          <Col md={4}>
+            <Card className="hud-card h-100">
               <Card.Body>
-                <h6 className="text-info mb-4">GROCERY_RADAR</h6>
-                <Form onSubmit={addGrocery} className="d-flex gap-2 mb-3">
-                  <Form.Control name="item" placeholder="Item..." className="bg-transparent text-white border-secondary" />
-                  <Button type="submit" variant="outline-info" size="sm">Add</Button>
+                <h6 className="sig-label mb-4 text-white">LOGISTICS_RADAR</h6>
+                <Form onSubmit={addGrocery} className="mb-3">
+                  <div className="input-group">
+                    <Form.Control name="item" placeholder="Item..." className="hud-input" />
+                    <Button type="submit" variant="outline-info">ADD</Button>
+                  </div>
                 </Form>
-                <div className="grocery-list-scroll" style={{ maxHeight: '180px', overflowY: 'auto' }}>
-                  <Row className="g-2">
-                    {groceries.map(g => (
-                      <Col xs={12} key={g.id}>
-                        <div className="p-2 border border-secondary rounded d-flex justify-content-between align-items-center bg-dark-subtle">
-                          <span className="small text-white">{g.name}</span>
-                          <Button variant="link" className="text-danger p-0 px-2 text-decoration-none" onClick={() => setGroceries(groceries.filter(i => i.id !== g.id))}>×</Button>
-                        </div>
-                      </Col>
-                    ))}
-                  </Row>
+                <div style={{maxHeight: '280px', overflowY: 'auto'}}>
+                  {groceries.map(g => (
+                    <div key={g.id} className="d-flex justify-content-between align-items-center p-2 mb-2 border border-secondary border-opacity-25 rounded bg-black">
+                      <span className="small opacity-75">{g.name}</span>
+                      <span className="text-danger cursor-pointer px-2" onClick={() => setGroceries(groceries.filter(i => i.id !== g.id))}>×</span>
+                    </div>
+                  ))}
                 </div>
               </Card.Body>
             </Card>

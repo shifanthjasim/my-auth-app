@@ -142,3 +142,68 @@ html, body {
   .signature-content { flex-direction: column; text-align: center; gap: 15px; }
   .sig-divider { width: 50px; height: 1px; }
 }
+
+/* --- 🚀 IMPORTANT HUB UI ENHANCEMENTS --- */
+
+/* Glowing HUD Card */
+.hud-card {
+  background: rgba(10, 10, 11, 0.8) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important; /* Sharper, more technical edges */
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.hud-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+}
+
+.hud-card:hover {
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+}
+
+/* Terminal Typography */
+.terminal-text {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.scanline-text {
+  text-shadow: 0 0 8px var(--neon-blue);
+}
+
+/* Digital Table Styling */
+.hud-table {
+  background: transparent !important;
+  font-size: 0.8rem;
+}
+
+.hud-table th {
+  color: var(--accent-blue) !important;
+  border-bottom: 2px solid var(--border-color) !important;
+  font-family: monospace;
+}
+
+.hud-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 10px 5px !important;
+}
+
+/* Form Inputs for Hub */
+.hud-input {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  color: white !important;
+  font-size: 0.8rem !important;
+}
+
+.hud-input:focus {
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2) !important;
+}
