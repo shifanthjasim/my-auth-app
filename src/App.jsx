@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { createClient } from '@supabase/supabase-js'; 
@@ -14,23 +13,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // --- SECURE_UPLINK_CONFIG ---
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+
+// Safety Check: Only initialize if keys exist to prevent Vercel Build Errors
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+  ? createClient(SUPABASE_URL, SUPABASE_KEY) 
+  : null;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true');
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [isWorkMode, setIsWorkMode] = useState(false);
   const [liveTime, setLiveTime] = useState(new Date());
-
-  // 🛰️ Session Re-validation for Safari/iPhone Sync
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      console.log("NODE_STATUS: ONLINE");
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   const checkWorkTime = () => {
     const hour = new Date().getHours();
@@ -56,9 +51,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    // 🧹 Clean up local storage but keep the cloud connection
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentView');
+    localStorage.clear();
     setIsLoggedIn(false);
     setCurrentView('home'); 
   };
@@ -68,7 +61,6 @@ function App() {
   return (
     <div className="App">
       <style>{`
-        /* 🕵️ CIA Win98 Style Restored */
         .intelligence-shell {
           background-color: ${isWorkMode ? '#008080' : '#f0f0f0'};
           min-height: 100vh;
@@ -90,10 +82,9 @@ function App() {
         .custom-nav {
           background: #c0c0c0 !important;
           border-bottom: 2px solid #808080;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .brand-sj { color: #000080 !important; font-family: 'Tahoma', sans-serif; cursor: pointer; }
-        .nav-link { color: #000 !important; font-size: 0.9rem; cursor: pointer; }
+        .brand-sj { color: #000080 !important; cursor: pointer; }
+        .nav-link { color: #000 !important; cursor: pointer; font-size: 0.9rem; }
         .active-link { background: #dfdfdf; border: 1px inset #808080; }
         .taskbar-status {
           position: fixed; bottom: 0; width: 100%; height: 30px;
@@ -107,8 +98,7 @@ function App() {
         <Login onLoginSuccess={handleLogin} />
       ) : (
         <div className={`intelligence-shell ${isWorkMode ? 'work-mode' : 'rest-mode'}`}>
-          
-          <Navbar variant="light" expand="lg" className="custom-nav py-2 px-4" fixed="top">
+          <Navbar expand="lg" className="custom-nav py-2 px-4" fixed="top">
             <Container fluid>
               <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
                 <i className="bi bi-shield-shaded me-2"></i>AXON_NODE
@@ -116,50 +106,38 @@ function App() {
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mx-auto fw-medium">
-                  {[
-                    { id: 'home', label: 'Home' },
-                    { id: 'books', label: 'Books' },
-                    { id: 'gardening', label: 'Gardening' },
-                    { id: 'coding', label: 'Coding' },
-                    { id: 'notes', label: 'Notes' },
-                    { id: 'diary', label: 'Diary' },
-                    { id: 'important', label: 'Important' }
-                  ].map((item) => (
+                  {['home', 'books', 'gardening', 'coding', 'notes', 'diary', 'important'].map((id) => (
                     <div 
-                      key={item.id}
-                      className={`nav-link px-3 ${currentView === item.id ? 'active-link' : ''}`} 
-                      onClick={() => setCurrentView(item.id)}
+                      key={id}
+                      className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`} 
+                      onClick={() => setCurrentView(id)}
                     >
-                      {item.label.toUpperCase()}
+                      {id.toUpperCase()}
                     </div>
                   ))}
                 </Nav>
-                <Button variant="outline-dark" size="sm" className="px-3" onClick={handleLogout}>
-                  LOGOFF
-                </Button>
+                <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
               </Navbar.Collapse>
             </Container>
           </Navbar>
 
           <Container className="main-content pb-5">
-            {/* 🖥️ WIN98 WRAPPER FOR SYSTEM TOOLS */}
             {['coding', 'important', 'notes', 'diary'].includes(currentView) ? (
               <div className="win-border shadow-lg">
                 <div className="win-header">
-                  <span>C:\LANGLEY\REPORTS\{currentView.toUpperCase()}.EXE</span>
-                  <span style={{cursor: 'pointer'}} onClick={goHome}>X</span>
+                  <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
+                  <span onClick={goHome} style={{cursor:'pointer'}}>X</span>
                 </div>
                 <div className="bg-white p-3" style={{ minHeight: '60vh' }}>
-                  {/* CRITICAL: Passing 'supabase' prop so Cloud Sync works */}
-                  {currentView === 'coding' && <Coding onBack={goHome} supabase={supabase} />}
-                  {currentView === 'notes' && <Notes onBack={goHome} supabase={supabase} />}
-                  {currentView === 'important' && <Important onBack={goHome} supabase={supabase} />}
-                  {currentView === 'diary' && <Diary onBack={goHome} supabase={supabase} />}
+                  {/* The key helps React reset the state when you switch views */}
+                  {currentView === 'coding' && <Coding key="coding" onBack={goHome} supabase={supabase} />}
+                  {currentView === 'notes' && <Notes key="notes" onBack={goHome} supabase={supabase} />}
+                  {currentView === 'important' && <Important key="imp" onBack={goHome} supabase={supabase} />}
+                  {currentView === 'diary' && <Diary key="diary" onBack={goHome} supabase={supabase} />}
                 </div>
               </div>
             ) : (
-              /* LIFESTYLE VIEWS */
-              <div className="page-transition-wrapper py-4" key={currentView}>
+              <div className="page-transition-wrapper py-4">
                 {currentView === 'home' && <Home />}
                 {currentView === 'books' && <Books onBack={goHome} />}
                 {currentView === 'gardening' && <Gardening onBack={goHome} />}
@@ -167,14 +145,10 @@ function App() {
             )}
           </Container>
 
-          {/* SYSTEM TASKBAR STATUS */}
           <div className="taskbar-status">
-            <span className="me-3"><i className="bi bi-cpu"></i> CPU_LOAD: 12%</span>
-            <span className="me-3"><i className="bi bi-geo-alt"></i> NODE: KANDY_LKA</span>
-            <span className="text-primary me-3"><i className="bi bi-broadcast"></i> UPLINK: MARYLAND_USA</span>
-            <span className="ms-auto border-start ps-3 border-dark">
-              {liveTime.toLocaleTimeString()}
-            </span>
+            <span className="me-3">NODE: KANDY_LKA</span>
+            <span className="text-primary me-3">UPLINK: MARYLAND_USA</span>
+            <span className="ms-auto">{liveTime.toLocaleTimeString()}</span>
           </div>
         </div>
       )}
