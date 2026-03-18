@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal, Tab, Tabs, Spinner, Badge } from 'react-bootstrap';
 
 const Books = ({ onBack, supabase }) => {
+  // --- 1. STATE MANAGEMENT ---
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState('reading'); // Default to what you're reading now
+  const [activeTab, setActiveTab] = useState('reading'); 
   const [editItem, setEditItem] = useState(null);
   
-  // Expanded Form Data
   const [formData, setFormData] = useState({ 
     title: '', 
     author: '', 
@@ -17,6 +17,7 @@ const Books = ({ onBack, supabase }) => {
     review: '' 
   });
 
+  // --- 2. DATA DOWNLINK ---
   const fetchBooks = async () => {
     if (!supabase) return;
     setLoading(true);
@@ -35,11 +36,11 @@ const Books = ({ onBack, supabase }) => {
     fetchBooks();
   }, [supabase]);
 
+  // --- 3. DATA UPLINK ---
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // 🧠 DATA PACKING: We combine Author, Page, and Review into the 'text' column using |
     const packedText = `${formData.author} | ${formData.page} | ${formData.review} | ${formData.notes}`;
 
     const bookData = {
@@ -68,7 +69,6 @@ const Books = ({ onBack, supabase }) => {
   const openModal = (item = null) => {
     if (item) {
       setEditItem(item);
-      // 🧠 DATA UNPACKING
       const [author, page, review, notes] = (item.text || "").split(' | ');
       setFormData({ 
         title: item.mission_name, 
@@ -95,57 +95,76 @@ const Books = ({ onBack, supabase }) => {
   const filteredItems = items.filter(item => item.priority_level === activeTab);
 
   return (
-    <div className="books-wrapper bg-black text-white p-3" style={{ minHeight: '70vh' }}>
+    <div className="books-wrapper bg-black text-white p-2 p-md-3" style={{ minHeight: '70vh' }}>
       <Container fluid>
-        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+        
+        {/* 🛠️ RESPONSIVE HEADER FIX */}
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 border-bottom border-secondary pb-3 gap-3">
           <div className="d-flex align-items-center">
-            <Button variant="outline-info" size="sm" className="me-3" onClick={onBack}>← BACK</Button>
-            <h4 className="fw-bold text-info mb-0">BOOK_VAULT.LOG</h4>
+            <Button variant="outline-info" size="sm" className="me-2 me-md-3" onClick={onBack}>← BACK</Button>
+            <h4 className="fw-bold text-info mb-0" style={{ letterSpacing: '1px', fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)' }}>
+              BOOK_VAULT.LOG
+            </h4>
           </div>
-          <Button variant="info" size="sm" className="fw-bold" onClick={() => openModal()}>+ ADD_NEW</Button>
+          <Button 
+            variant="info" 
+            size="sm" 
+            className="fw-bold px-3 shadow-sm w-sm-auto" 
+            style={{ whiteSpace: 'nowrap' }}
+            onClick={() => openModal()}
+          >
+            + ADD_NEW
+          </Button>
         </div>
 
-        {/* 📚 NEW CATEGORIES */}
+        {/* 📚 CATEGORY TABS */}
         <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4 custom-tabs border-secondary">
-          <Tab eventKey="reading" title="📖 READING_NOW" />
-          <Tab eventKey="library" title="📚 MY_COLLECTION" />
-          <Tab eventKey="finished" title="✅ FINISHED" />
-          <Tab eventKey="bookmarks" title="📍 BOOKMARKS" />
+          <Tab eventKey="reading" title="📖 READING" />
+          <Tab eventKey="library" title="📚 COLLECTION" />
+          <Tab eventKey="finished" title="✅ DONE" />
+          <Tab eventKey="bookmarks" title="📍 MARKS" />
         </Tabs>
 
-        <Row className="g-3">
-          {filteredItems.map(book => {
-            const [author, page, review, notes] = (book.text || "").split(' | ');
-            return (
-              <Col md={6} lg={4} key={book.id}>
-                <Card className="bg-dark border-secondary h-100 win-border shadow-sm">
-                  <Card.Body className="p-3" style={{ background: '#000' }}>
-                    <div className="d-flex justify-content-between">
-                      <h6 className="text-info fw-bold mb-1">{book.mission_name}</h6>
-                      {page && <Badge bg="warning" text="dark">PG: {page}</Badge>}
-                    </div>
-                    <p className="small text-white-50 mb-2">BY: {author}</p>
-                    
-                    {review && (
-                      <div className="p-2 mb-2 bg-dark border border-secondary small italic text-warning">
-                        " {review} "
+        {loading ? (
+          <div className="text-center py-5"><Spinner animation="border" variant="info" /></div>
+        ) : (
+          <Row className="g-3">
+            {filteredItems.length === 0 && (
+              <Col className="text-center py-5 text-muted small italic">Satellite link active. No records in {activeTab}.</Col>
+            )}
+            {filteredItems.map(book => {
+              const [author, page, review, notes] = (book.text || "").split(' | ');
+              return (
+                <Col md={6} lg={4} key={book.id}>
+                  <Card className="bg-dark border-secondary h-100 win-border shadow-sm">
+                    <Card.Body className="p-3" style={{ background: '#000' }}>
+                      <div className="d-flex justify-content-between">
+                        <h6 className="text-info fw-bold mb-1">{book.mission_name}</h6>
+                        {page && <Badge bg="warning" text="dark">PG: {page}</Badge>}
                       </div>
-                    )}
+                      <p className="small text-white-50 mb-2">BY: {author}</p>
+                      
+                      {review && (
+                        <div className="p-2 mb-2 bg-dark border border-secondary small italic text-warning" style={{fontSize: '0.75rem'}}>
+                          "{review}"
+                        </div>
+                      )}
 
-                    <p className="small text-white opacity-75">{notes}</p>
-                    
-                    <div className="d-flex gap-2 mt-3 pt-2 border-top border-secondary">
-                      <Button size="xs" variant="outline-primary" style={{fontSize: '0.7rem'}} onClick={() => openModal(book)}>UPDATE</Button>
-                      <Button size="xs" variant="outline-danger" style={{fontSize: '0.7rem'}} onClick={() => deleteItem(book.id)}>ERASE</Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
+                      <p className="small text-white opacity-75">{notes}</p>
+                      
+                      <div className="d-flex gap-2 mt-auto pt-2 border-top border-secondary">
+                        <Button size="xs" variant="outline-primary" style={{fontSize: '0.7rem'}} onClick={() => openModal(book)}>UPDATE</Button>
+                        <Button size="xs" variant="outline-danger" style={{fontSize: '0.7rem'}} onClick={() => deleteItem(book.id)}>ERASE</Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        )}
 
-        {/* MODAL WITH NEW FIELDS */}
+        {/* DATA MODAL */}
         <Modal show={showModal} onHide={closeModal} centered contentClassName="bg-dark text-white border-info win-border">
           <Form onSubmit={handleSave}>
             <Modal.Header closeButton closeVariant="white" className="border-secondary bg-black">
@@ -163,19 +182,19 @@ const Books = ({ onBack, supabase }) => {
                     <Form.Control className="bg-dark text-white border-secondary small" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} />
                   </Form.Group>
                 </Col>
-                <Col md={4}>
+                <Col xs={5} md={4}>
                   <Form.Group className="mb-2">
-                    <Form.Label className="small text-muted">CURRENT_PAGE</Form.Label>
+                    <Form.Label className="small text-muted">PAGE</Form.Label>
                     <Form.Control type="number" className="bg-dark text-white border-secondary small" value={formData.page} onChange={e => setFormData({...formData, page: e.target.value})} />
                   </Form.Group>
                 </Col>
               </Row>
               <Form.Group className="mb-2">
-                <Form.Label className="small text-muted">MY_REVIEW / RATING</Form.Label>
+                <Form.Label className="small text-muted">REVIEW / RATING</Form.Label>
                 <Form.Control className="bg-dark text-white border-secondary small" value={formData.review} onChange={e => setFormData({...formData, review: e.target.value})} />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="small text-muted">GENERAL_NOTES</Form.Label>
+                <Form.Label className="small text-muted">NOTES</Form.Label>
                 <Form.Control as="textarea" rows={3} className="bg-dark text-white border-secondary small" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
               </Form.Group>
             </Modal.Body>
