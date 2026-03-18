@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap';
 
 const Home = () => {
   const [time, setTime] = useState(new Date());
-  const name = "Shifanth Jasim";
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -22,64 +21,38 @@ const Home = () => {
 
   return (
     <div className="home-wrapper">
-      {/* 1. HERO SECTION - PRISM DESIGN */}
-      /* --- 🛸 NEW HERO COMPONENT --- */
-<div className="modern-hero">
-  <Container>
-    <div className="status-badge mb-3">
-      <span className="blink-dot me-2"></span>
-      <span className="status-text">UPLINK_STABLE // KANDY_NODE</span>
-    </div>
-    
-    <h1 className="hero-title">
-      Hello, <span className="text-accent">Shifanth</span>
-    </h1>
-    
-    <div className="hero-metrics-grid mt-5">
-      <div className="metric-box">
-        <label>LOCAL_TIME</label>
-        <div className="value">{time.toLocaleTimeString()}</div>
-      </div>
-      <div className="metric-box">
-        <label>POSITION</label>
-        <div className="value">KANDY, SRI LANKA</div>
-      </div>
-      <div className="metric-box">
-        <label>ROLE</label>
-        <div className="value">S.E. // MARYLAND</div>
-      </div>
-    </div>
-  </Container>
-</div>
-                
-                  {char === " " ? "\u00A0" : char}
-                </span>
-              ))}
-            </h1>
+      {/* 🛸 1. MODERN HERO SECTION */}
+      <div className="modern-hero">
+        <Container>
+          <div className="status-badge mb-3">
+            <span className="blink-dot me-2"></span>
+            <span className="status-text">UPLINK_STABLE // KANDY_NODE</span>
           </div>
           
-          {/* 🧊 GLASS-MORPHISM STATUS BAR */}
-          <div className="hero-status-container">
-            <div className="hero-status-glass">
-              <span className="status-item">
-                <i className="bi bi-geo-alt-fill me-2 text-info"></i>Kandy, LK
-              </span>
-              <span className="status-divider"></span>
-              <span className="status-item font-monospace">
-                <i className="bi bi-clock-history me-2 text-info"></i>
+          <h1 className="hero-title">
+            Hello, <span className="text-accent">Shifanth</span>
+          </h1>
+          
+          <div className="hero-metrics-grid mt-5">
+            <div className="metric-box">
+              <label>LOCAL_TIME</label>
+              <div className="value font-monospace">
                 {time.toLocaleTimeString([], { hour12: false })}
-              </span>
-              <span className="status-divider"></span>
-              <span className="status-item">
-                <i className="bi bi-calendar3 me-2 text-info"></i>
-                {time.toLocaleDateString('en-GB')}
-              </span>
+              </div>
+            </div>
+            <div className="metric-box">
+              <label>POSITION</label>
+              <div className="value">KANDY, SRI LANKA</div>
+            </div>
+            <div className="metric-box">
+              <label>ROLE</label>
+              <div className="value">S.E. // MARYLAND</div>
             </div>
           </div>
         </Container>
       </div>
 
-      {/* 2. WISDOM STREAM (UPWARD CRAWL) */}
+      {/* 🌊 2. WISDOM STREAM (UPWARD CRAWL) */}
       <div className="wisdom-stream-container">
         <div className="stream-inner">
           {[...quotes, ...quotes].map((q, i) => (
@@ -91,7 +64,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 3. SIGNATURE FOOTER */}
+      {/* 🖋️ 3. SIGNATURE FOOTER */}
       <footer className="footer-signature">
         <div className="footer-line"></div>
         <div className="signature-content">
@@ -106,7 +79,7 @@ const Home = () => {
           </div>
         </div>
         <div className="system-uptime">
-          <span className="blink-dot"></span> SYSTEM_STABLE_v4.6.0_PRO
+          <span className="blink-dot"></span> SYSTEM_STABLE_v5.0.0_MODERN
         </div>
       </footer>
     </div>
