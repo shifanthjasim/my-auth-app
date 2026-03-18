@@ -1,31 +1,22 @@
-/* --- 🛰️ 1. GLOBAL ANCHORS & THEME VARIABLES --- */
+/* --- 🛰️ 1. GLOBAL RESET --- */
 :root {
   --bg-dark: #020617;
   --neon-blue: #00f2fe;
   --accent-blue: #4facfe;
   --border-color: rgba(255, 255, 255, 0.1);
-  --glass: rgba(255, 255, 255, 0.03);
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
-html, body {
+html, body, #root, .App {
   background-color: var(--bg-dark) !important;
-  margin: 0; padding: 0;
-  height: 100vh; height: 100svh;
-  width: 100%;
-  overflow: hidden !important;
   color: #ffffff !important;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-#root, .App {
-  height: 100%; width: 100%;
-  background-color: var(--bg-dark);
+  margin: 0; padding: 0;
+  height: 100vh !important;
+  width: 100% !important;
+  overflow: hidden !important;
   display: flex; flex-direction: column;
 }
 
-/* --- 🧊 2. SHELL LAYOUT (CHROME & SAFARI FIX) --- */
+/* --- 🧊 2. LAYOUT --- */
 .viewport-lock {
   flex: 1; display: flex; flex-direction: column;
   height: 100%; position: relative; overflow: hidden;
@@ -33,143 +24,110 @@ html, body {
 
 .intelligence-shell {
   flex: 1; overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-top: 85px; padding-bottom: 60px;
-  background: radial-gradient(circle at top center, #1e293b 0%, #020617 100%);
-  position: relative; z-index: 1;
+  padding-top: 85px; padding-bottom: 80px;
+  background: radial-gradient(circle at top, #1e293b 0%, #020617 100%) !important;
 }
 
-/* --- 🚀 3. MODERN NAVIGATION --- */
+/* --- 🚀 3. NAVBAR & TASKBAR (FORCE DARK) --- */
 .custom-nav {
-  background: rgba(2, 6, 23, 0.9) !important;
+  background: rgba(2, 6, 23, 0.95) !important;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color) !important;
-  min-height: 65px; z-index: 10000 !important;
+  z-index: 9999 !important;
 }
 
-.brand-sj { font-weight: 800; color: #fff !important; cursor: pointer; letter-spacing: 1px; }
+.nav-link { color: #94a3b8 !important; font-weight: 600 !important; }
+.active-link { color: var(--neon-blue) !important; }
 
-.nav-link {
-  font-size: 0.75rem !important; font-weight: 500;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: #94a3b8 !important; transition: 0.3s ease;
-}
-
-.nav-link:hover, .active-link { color: var(--neon-blue) !important; }
-
-/* LOGOFF BUTTON VISIBILITY */
+/* LOGOFF BUTTON */
 .btn-outline-dark {
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.4) !important;
+  color: #fff !important;
   background: transparent !important;
 }
 
-.btn-outline-dark:hover {
-  background: var(--neon-blue) !important;
-  border-color: var(--neon-blue) !important;
-  color: #000 !important;
+.taskbar-status {
+  position: fixed !important; bottom: 0; width: 100%;
+  height: 35px; background: #020617 !important;
+  border-top: 1px solid var(--border-color) !important;
+  color: #94a3b8 !important; z-index: 9999 !important;
 }
 
-/* --- 🛸 4. HERO SECTION --- */
-.modern-hero { padding: 40px 0; }
-.hero-title { font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; color: #fff !important; margin-bottom: 2rem; }
-.text-accent { color: var(--neon-blue) !important; text-shadow: 0 0 30px rgba(0, 242, 254, 0.3); }
-
-.status-badge {
-  display: inline-flex; align-items: center;
-  background: rgba(0, 242, 254, 0.05); padding: 6px 16px;
-  border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 4px; margin-bottom: 1.5rem;
-}
-
-.hero-metrics-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 2rem; border-top: 1px solid var(--border-color);
-  padding-top: 2rem; margin-top: 2rem;
-}
-
-.metric-box label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-blue) !important; letter-spacing: 2px; }
-.metric-box .value { font-size: 1.1rem; font-weight: 600; color: #fff !important; }
-
-/* --- 📦 5. IMPORTANT HUB & HUD CARDS --- */
-.win-border {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 12px; overflow: hidden;
-}
-
-.win-header {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--neon-blue) !important; font-family: var(--font-mono);
-  padding: 10px 20px; font-size: 0.7rem;
-}
-
-.hud-card, .card {
-  background: var(--glass) !important;
-  border: 1px solid var(--border-color) !important;
-  color: #fff !important; padding: 20px; border-radius: 8px;
-}
-
-/* --- 🖋️ 6. SIGNATURE FOOTER (THE RESTORED SECTION) --- */
+/* --- 🖋️ 4. SIGNATURE FOOTER (THE RE-FIX) --- */
 .footer-signature {
-  padding: 80px 0 40px;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 25px;
-}
-
-.footer-line {
-  width: 90%; max-width: 800px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  padding: 100px 0 60px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 30px !important;
+  width: 100%;
 }
 
 .signature-content {
-  display: flex; align-items: center; gap: 30px;
+  display: flex !important;
+  flex-direction: row !important; /* Forces side-by-side on desktop */
+  align-items: center !important;
+  gap: 40px !important;
 }
 
 .sig-left, .sig-right {
-  display: flex; flex-direction: column;
-  text-align: left;
+  display: flex !important;
+  flex-direction: column !important; /* Forces Label above Value */
+  text-align: left !important;
 }
 
 .sig-label {
-  font-size: 0.65rem; color: var(--accent-blue) !important;
-  letter-spacing: 3px; font-family: var(--font-mono);
-  margin-bottom: 4px;
+  font-size: 0.65rem !important;
+  color: var(--accent-blue) !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase;
 }
 
 .sig-name {
-  font-size: 1.4rem; font-weight: 900; letter-spacing: 2px;
+  font-size: 1.6rem !important;
+  font-weight: 900 !important;
+  color: #fff !important;
   background: linear-gradient(90deg, #fff, var(--neon-blue));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
 }
 
-.sig-divider { width: 1px; height: 45px; background: var(--border-color); }
+.sig-divider {
+  width: 1px !important;
+  height: 50px !important;
+  background: var(--border-color) !important;
+}
 
-.sig-title { font-size: 0.8rem; font-weight: 700; color: #fff !important; margin-bottom: 2px; }
-.sig-location { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4) !important; }
+.sig-title {
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+
+.sig-location {
+  font-size: 0.7rem !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
 
 .system-uptime {
-  font-family: var(--font-mono); font-size: 0.7rem;
+  font-size: 0.7rem !important;
   color: rgba(255, 255, 255, 0.3) !important;
-  display: flex; align-items: center; gap: 8px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
-.blink-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: blink 1.5s infinite; }
-
-/* --- 🎬 7. TASKBAR & ANIMATIONS --- */
-.taskbar-status {
-  position: fixed !important; bottom: 0; left: 0; right: 0;
-  height: 35px; background: rgba(2, 6, 23, 0.95) !important;
-  border-top: 1px solid var(--border-color);
-  display: flex; align-items: center; padding: 0 20px;
-  color: #94a3b8 !important; font-size: 0.7rem; z-index: 10000;
-}
-
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
+/* --- 📱 MOBILE SIGNATURE --- */
 @media (max-width: 768px) {
-  .signature-content { flex-direction: column; text-align: center; gap: 20px; }
-  .sig-left, .sig-right { text-align: center; }
-  .sig-divider { width: 60px; height: 1px; }
+  .signature-content {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+  .sig-left, .sig-right { text-align: center !important; }
+  .sig-divider { width: 80px !important; height: 1px !important; }
+}
+
+/* --- 📦 5. HUB CARDS (PREVENT WHITE-OUT) --- */
+.win-border, .hud-card, .card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  color: #fff !important;
 }
