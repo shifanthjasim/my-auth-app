@@ -22,6 +22,8 @@ function App() {
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [liveTime, setLiveTime] = useState(new Date());
   const [navExpanded, setNavExpanded] = useState(false);
+  
+  // Stability states
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
@@ -34,18 +36,28 @@ function App() {
     localStorage.setItem('currentView', currentView);
   }, [currentView]);
 
+  // 🛠️ THE HEAVY-DUTY LOGIN HANDLER
   const handleLogin = () => {
+    // Phase 1: Lock the UI
     setIsRedirecting(true);
+    
+    // Phase 2: Set Data
     localStorage.setItem('isLoggedIn', 'true');
     setCurrentView('home');
+
+    // Phase 3: Delay the mounting of the dashboard to let Chrome/Safari clear memory
     setTimeout(() => {
       setIsLoggedIn(true);
       setSessionKey(prev => prev + 1);
+      
+      // Phase 4: Final release of the redirect curtain
       setTimeout(() => {
         setIsRedirecting(false);
-        window.scrollTo(0, 0);
-      }, 50);
-    }, 250);
+        // Ensure browser is at the top of the shell
+        const shell = document.querySelector('.intelligence-shell');
+        if (shell) shell.scrollTop = 0;
+      }, 100);
+    }, 400); // 400ms is the "Sweet Spot" for browser stability
   };
 
   const handleLogout = () => {
@@ -54,10 +66,13 @@ function App() {
     setCurrentView('home'); 
   };
 
-  const goHome = () => { setCurrentView('home'); setNavExpanded(false); };
+  const goHome = () => { 
+    setCurrentView('home'); 
+    setNavExpanded(false); 
+  };
 
   return (
-    <div className="App" key={sessionKey}>
+    <div className="App" key={sessionKey} style={{ background: '#000', minHeight: '100vh' }}>
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
@@ -75,7 +90,10 @@ function App() {
                     <Nav.Link 
                       key={id}
                       className={`px-3 ${currentView === id ? 'active-link' : ''}`} 
-                      onClick={() => { setCurrentView(id); setNavExpanded(false); }}
+                      onClick={() => {
+                        setCurrentView(id);
+                        setNavExpanded(false); 
+                      }}
                     >
                       {id.toUpperCase()}
                     </Nav.Link>
