@@ -293,7 +293,76 @@ html, body {
     letterEntry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
     prismShimmer 4s linear infinite;
 }
+/* --- 🛸 MODERN HERO FIXED --- */
+.modern-hero {
+  padding: 100px 0 60px;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 242, 254, 0.05);
+  padding: 6px 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  width: fit-content;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin-bottom: 3rem;
+  line-height: 1;
+}
+
+.text-accent {
+  color: var(--neon-blue);
+  text-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+}
+
+/* --- 📊 THE METRICS GRID (The Spacing Fix) --- */
+.hero-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2.5rem;
+  max-width: 900px;
+}
+
+.metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-box label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--neon-blue);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.metric-box .value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* --- 🌊 QUOTE BOX POSITIONING --- */
+.wisdom-stream-container {
+  margin-top: 2rem;
+}
 /* --- 🧊 GLASS STATUS BAR --- */
 .hero-status-container {
   margin-top: 40px;
