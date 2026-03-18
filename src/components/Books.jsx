@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal, Tab, Tabs, Spinner, Badge } from 'react-bootstrap';
 
 const Books = ({ onBack, supabase }) => {
+  // --- 1. STATE MANAGEMENT ---
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -9,20 +10,22 @@ const Books = ({ onBack, supabase }) => {
   const [editItem, setEditItem] = useState(null);
   const [formData, setFormData] = useState({ title: '', author: '', notes: '' });
 
-  // --- 🛰️ THE DOWNLINK (Fetch everything in one go) ---
+  // --- 2. THE DOWNLINK (Fetch All Books) ---
   const fetchBooks = async () => {
     if (!supabase) return;
     setLoading(true);
     
+    console.log("🛰️ Syncing Book Vault with Maryland...");
     const { data, error } = await supabase
       .from('missions')
       .select('*')
-      .eq('category', 'Books'); // No more secondary filters here
+      .eq('category', 'Books') // ⚡ Case-sensitive: Must match the Save function
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error("❌ VAULT_FETCH_ERROR:", error.message);
     } else {
-      console.log("✅ DATA_SYNC_FROM_MARYLAND:", data);
+      console.log("✅ DATA_RECEIVED:", data);
       setItems(data || []);
     }
     setLoading(false);
@@ -30,49 +33,54 @@ const Books = ({ onBack, supabase }) => {
 
   useEffect(() => {
     fetchBooks();
-  }, [supabase]); // Removed activeTab to prevent unnecessary re-fetches
+  }, [supabase]);
 
-  // --- 🚀 THE UPLINK (Force Cloud Write) ---
+  // --- 3. THE UPLINK (Insert or Update with Force Confirmation) ---
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!formData.title) return;
     setLoading(true);
 
     const bookData = {
       mission_name: formData.title,
       text: `${formData.author} | ${formData.notes}`, 
-      category: 'Books',
+      category: 'Books', // ⚡ Hardcoded 'Books' to prevent sync drift
       priority_level: activeTab, 
     };
 
     let result;
     if (editItem) {
+      // UPDATE
       result = await supabase
         .from('missions')
         .update(bookData)
         .eq('id', editItem.id)
         .select();
     } else {
+      // INSERT
       result = await supabase
         .from('missions')
         .insert([bookData])
-        .select();
+        .select(); // 🛰️ This confirms the data actually hit the Maryland server
     }
 
     if (result.error) {
       console.error("❌ UPLINK_CRASHED:", result.error.message);
-      alert("⚠️ CLOUD_SYNC_ERROR: " + result.error.message);
+      alert("⚠️ CLOUD_SYNC_FAILED: " + result.error.message);
     } else {
-      console.log("📡 UPLINK_SUCCESS:", result.data);
+      console.log("📡 UPLINK_SUCCESSFUL:", result.data);
       closeModal();
-      fetchBooks(); // Force global refresh
+      fetchBooks(); // Force a fresh sync
     }
     setLoading(false);
   };
 
+  // --- 4. THE ERASE COMMAND ---
   const deleteItem = async (id) => {
-    if (window.confirm("ERASE_RECORD: Remove from Maryland Hub?")) {
+    if (window.confirm("ERASE_RECORD: Permanently remove from Maryland?")) {
       const { error } = await supabase.from('missions').delete().eq('id', id);
-      if (!error) fetchBooks();
+      if (error) console.error("❌ DELETE_ERROR:", error.message);
+      else fetchBooks();
     }
   };
 
@@ -93,12 +101,13 @@ const Books = ({ onBack, supabase }) => {
 
   const closeModal = () => { setShowModal(false); setEditItem(null); };
 
-  // Filter items in the UI (keeps things fast)
+  // UI Filtering (Keeps the app fast)
   const filteredItems = items.filter(item => item.priority_level === activeTab);
 
   return (
     <div className="books-wrapper bg-black text-white p-3" style={{ minHeight: '70vh' }}>
       <Container fluid>
+        {/* HEADER */}
         <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
           <div className="d-flex align-items-center">
             <Button variant="outline-info" size="sm" className="me-3" onClick={onBack}>← BACK</Button>
@@ -122,17 +131,17 @@ const Books = ({ onBack, supabase }) => {
         ) : (
           <Row className="g-3">
             {filteredItems.length === 0 && (
-              <Col className="text-center py-5 text-muted small italic">Satellite link active. No records in {activeTab}.</Col>
+              <Col className="text-center py-5 text-muted small italic">Satellite link active. No records found in {activeTab}.</Col>
             )}
             {filteredItems.map(book => (
               <Col md={6} lg={4} key={book.id}>
                 <Card className="bg-dark border-secondary h-100 win-border shadow-sm">
-                  <Card.Body className="p-3" style={{backgroundColor: '#000'}}>
+                  <Card.Body className="p-3" style={{ background: '#000' }}>
                     <div className="d-flex justify-content-between">
                       <h6 className="text-info fw-bold mb-1">{book.mission_name}</h6>
                       <Badge bg="info" text="dark" style={{fontSize: '0.6rem'}}>{activeTab.toUpperCase()}</Badge>
                     </div>
-                    <p className="small text-muted mb-2">{book.text?.split(' | ')[0]}</p>
+                    <p className="small text-white-50 mb-2">{book.text?.split(' | ')[0]}</p>
                     <hr className="border-secondary my-2" />
                     <p className="small text-white opacity-75 mb-3">{book.text?.split(' | ')[1]}</p>
                     <div className="d-flex gap-2 mt-auto">
