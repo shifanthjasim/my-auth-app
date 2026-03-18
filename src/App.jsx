@@ -23,23 +23,14 @@ const supabase = (SUPABASE_URL && SUPABASE_KEY)
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true');
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
-  const [isWorkMode, setIsWorkMode] = useState(false);
   const [liveTime, setLiveTime] = useState(new Date());
-  
-  // 📱 NEW: State to control mobile menu
   const [navExpanded, setNavExpanded] = useState(false);
-
-  const checkWorkTime = () => {
-    const hour = new Date().getHours();
-    setIsWorkMode(hour >= 17 || hour < 2);
-  };
+  
+  // ⚡ THE REFRESH FIX: Forces React to re-draw the dashboard after login
+  const [sessionKey, setSessionKey] = useState(0);
 
   useEffect(() => {
-    checkWorkTime();
-    const timer = setInterval(() => {
-      checkWorkTime();
-      setLiveTime(new Date());
-    }, 1000); 
+    const timer = setInterval(() => setLiveTime(new Date()), 1000); 
     return () => clearInterval(timer);
   }, []);
 
@@ -50,6 +41,8 @@ function App() {
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true');
+    setSessionKey(prev => prev + 1); // 🛰️ The "Wake Up" signal
+    setCurrentView('home'); 
   };
 
   const handleLogout = () => {
@@ -60,17 +53,16 @@ function App() {
 
   const goHome = () => {
     setCurrentView('home');
-    setNavExpanded(false); // Close menu when going home
+    setNavExpanded(false);
   };
 
   return (
-    <div className="App">
+    <div className="App" key={sessionKey}>
       <style>{`
         .intelligence-shell {
           background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
           background-attachment: fixed;
           min-height: 100vh;
-          transition: background-color 1s ease;
           padding-top: 80px;
           color: #fff;
         }
@@ -97,27 +89,32 @@ function App() {
           text-transform: uppercase;
         }
 
-        /* 🕵️‍♂️ TAB VISIBILITY PATCH - Fixes the white-on-white text */
-        .custom-tabs .nav-link {
-          color: #000000 !important;
-          font-weight: bold;
-          font-size: 0.7rem;
-          background: #c0c0c0;
-          border: 2px solid;
-          border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
-          margin-right: 2px;
+        /* 📱 MOBILE TAB SCROLL FIX */
+        @media (max-width: 768px) {
+          .custom-tabs {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
+            gap: 5px;
+          }
+          .custom-tabs .nav-item { flex: 0 0 auto; }
         }
 
+        /* 🕵️‍♂️ TAB VISIBILITY PATCH */
+        .custom-tabs .nav-link {
+          color: #000 !important; font-weight: bold; font-size: 0.7rem;
+          background: #c0c0c0; border: 2px solid;
+          border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
+        }
         .custom-tabs .nav-link.active {
-          color: #00f2ff !important;
-          background: #000000 !important;
-          border-bottom: none !important;
+          color: #00f2ff !important; background: #000 !important; border-bottom: none !important;
         }
 
         .custom-nav {
           background: #c0c0c0 !important;
           border-bottom: 2px solid #808080;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .brand-sj { color: #000080 !important; cursor: pointer; letter-spacing: 1px; }
@@ -128,8 +125,7 @@ function App() {
           position: fixed; bottom: 0; width: 100%; height: 30px;
           background: #c0c0c0; border-top: 2px solid #dfdfdf;
           display: flex; align-items: center; padding: 0 15px;
-          font-size: 0.7rem; font-weight: bold; z-index: 1000;
-          color: #333;
+          font-size: 0.7rem; font-weight: bold; z-index: 1000; color: #333;
         }
       `}</style>
 
@@ -137,7 +133,6 @@ function App() {
         <Login onLoginSuccess={handleLogin} />
       ) : (
         <div className="intelligence-shell">
-          {/* 📱 Added 'expanded' and 'onToggle' for iPhone auto-close */}
           <Navbar 
             expand="lg" 
             expanded={navExpanded} 
@@ -158,7 +153,7 @@ function App() {
                       className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`} 
                       onClick={() => {
                         setCurrentView(id);
-                        setNavExpanded(false); // 🛰️ CLoses menu after selection
+                        setNavExpanded(false); 
                       }}
                     >
                       {id.toUpperCase()}
@@ -172,7 +167,7 @@ function App() {
 
           <Container className="main-content pb-5">
             {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
-              <div className="win-border shadow-lg animate-fade-in">
+              <div className="win-border shadow-lg">
                 <div className="win-header">
                   <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
                   <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
@@ -195,7 +190,7 @@ function App() {
 
           <div className="taskbar-status">
             <span className="me-3 text-uppercase">NODE: KANDY_LKA</span>
-            <span className="text-primary me-3 text-uppercase">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'DISCONNECTED'}</span>
+            <span className="text-primary me-3 text-uppercase">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'OFFLINE'}</span>
             <span className="ms-auto">{liveTime.toLocaleTimeString()}</span>
           </div>
         </div>
