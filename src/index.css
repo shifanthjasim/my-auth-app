@@ -630,20 +630,3 @@ html, body {
   height: 65px !important;
   background: rgba(0, 0, 0, 0.95) !important;
 }
-
-/* Lock Footer to Bottom */
-.taskbar-status {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height: 35px !important;
-  z-index: 9999 !important;
-  background: #c0c0c0 !important;
-  display: flex !important;
-  align-items: center !important;
-  /* Safari iPhone Fix */
-  padding-bottom: env(safe-area-inset-bottom) !important;
-  box-sizing: content-box !important;
-}
