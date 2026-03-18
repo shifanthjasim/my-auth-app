@@ -9,22 +9,22 @@ const Diary = ({ onBack, supabase }) => {
   const [formData, setFormData] = useState({ title: '', content: '', mood: '😊 Happy' });
 
   // --- 2. THE DOWNLINK (Fetch from Maryland) ---
-  const fetchEntries = async () => {
-    if (!supabase) return;
-    
-    console.log("🛰️ AXON_NODE: Requesting data from Maryland...");
-    const { data, error } = await supabase
-      .from('missions')
-      .select('*')
-      .order('created_at', { ascending: false });
+  const fetchDiaryEntries = async () => {
+  if (!supabase) return;
+  
+  const { data, error } = await supabase
+    .from('missions')
+    .select('*')
+    /* 🎯 THE FILTER:
+       Only fetch rows where category is 'Diary' 
+       OR rows where category is NULL (to keep your old data)
+    */
+    .or('category.eq.Diary,category.is.null') 
+    .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error("❌ UPLINK_ERROR:", error.message);
-    } else {
-      console.log("✅ DATA_RECOVERED:", data.length, "entries found.");
-      setEntries(data || []);
-    }
-  };
+  if (error) console.error("❌ DIARY_SYNC_ERROR:", error.message);
+  else setEntries(data || []);
+};
 
   // Run fetch as soon as the component loads
   useEffect(() => {
