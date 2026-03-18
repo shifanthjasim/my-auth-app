@@ -1,27 +1,66 @@
-/* --- 🍎 SAFARI COMPATIBILITY LAYER --- */
-
+/* --- 🛰️ UNIVERSAL VIEWPORT RESET --- */
 :root {
   --bg-dark: #020617;
   --neon-blue: #00f2fe;
 }
 
+/* 1. The Global Anchor */
 html, body {
   background-color: var(--bg-dark) !important;
   margin: 0;
   padding: 0;
-  /* SVH is the secret weapon for Safari Mobile */
-  height: 100vh; 
-  height: 100svh; 
-  width: 100%;
-  overflow: hidden; /* Prevent the double-scroll bounce */
-  -webkit-font-smoothing: antialiased;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important; /* Prevents Chrome "Double Scroll" */
+  display: block !important;
 }
 
+/* 2. The App Wrapper (Fixes Chrome Black Screen) */
 #root, .App {
-  height: 100%;
+  position: relative;
+  height: 100vh;
+  height: 100dvh; /* Dynamic Viewport for Mobile */
+  width: 100%;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-dark);
+  isolation: isolate; /* Creates a new stacking context for Chrome */
 }
+
+/* 3. The Scrolling Shell (Safari Height Fix) */
+.intelligence-shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 70px; /* Space for Navbar */
+  padding-bottom: 50px; /* Space for Taskbar */
+  position: relative;
+  z-index: 1;
+}
+
+/* 4. Ensure Home Content is "Forced" Visible */
+.home-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
+  min-height: min-content; /* Prevents Chrome collapse */
+}
+
+/* 📊 GRID STABILITY */
+.hero-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+  width: 100%;
+}
+
+
 
 .viewport-lock {
   flex: 1;
