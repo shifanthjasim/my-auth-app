@@ -1,16 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { createClient } from '@supabase/supabase-js'; 
-import Login from './components/Login';
-import Home from './components/Home';
-import Books from './components/Books';
-import Gardening from './components/Gardening';
-import Coding from './components/Coding';
-import Notes from './components/Notes';
-import Diary from './components/Diary'; 
-import Important from './components/Important';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
