@@ -13,16 +13,24 @@ const Books = ({ onBack, supabase }) => {
   // --- 2. THE DOWNLINK (Fetch All Books) ---
   const fetchEntries = async () => {
   if (!supabase) return;
+  setLoading(true);
 
   const { data, error } = await supabase
     .from('missions')
     .select('*')
-    // 🎯 THIS IS THE FILTERING LINE YOU NEED:
+    /* 🎯 THE FILTER: 
+       We fetch items where category is 'Diary' 
+       OR items where category is NULL (to keep your old entries)
+    */
     .or('category.eq.Diary,category.is.null') 
     .order('created_at', { ascending: false });
 
-  if (error) console.error("Error:", error.message);
-  else setEntries(data || []);
+  if (error) {
+    console.error("❌ DIARY_FETCH_ERROR:", error.message);
+  } else {
+    setEntries(data || []);
+  }
+  setLoading(false);
 };
 
   // --- 3. THE UPLINK (Insert or Update with Force Confirmation) ---
