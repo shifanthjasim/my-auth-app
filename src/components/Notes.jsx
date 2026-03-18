@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Modal, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal, Badge, Spinner } from 'react-bootstrap';
 
 const Notes = ({ onBack, supabase }) => {
   // --- 1. STATE MANAGEMENT (Cloud-First) ---
@@ -11,12 +11,13 @@ const Notes = ({ onBack, supabase }) => {
   // --- 2. THE DOWNLINK (Fetch from Maryland) ---
   const fetchNotes = async () => {
     if (!supabase) return;
+    setLoading(true);
     
     console.log("🛰️ Requesting System Notes from Maryland...");
     const { data, error } = await supabase
       .from('missions')
       .select('*')
-      .eq('category', 'Note') // Filter only for Notes
+      .eq('category', 'Note') 
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -24,6 +25,7 @@ const Notes = ({ onBack, supabase }) => {
     } else {
       setNotes(data || []);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -39,10 +41,10 @@ const Notes = ({ onBack, supabase }) => {
     const { error } = await supabase
       .from('missions')
       .insert([{ 
-        mission_name: formData.title, // Map title to mission_name
-        text: formData.content,       // Map content to text
-        category: 'Note',             // Hardcoded category
-        priority_level: formData.priority // Optional: if you added this column
+        mission_name: formData.title, 
+        text: formData.content,       
+        category: 'Note',             
+        priority_level: formData.priority 
       }]);
 
     if (error) {
@@ -69,57 +71,73 @@ const Notes = ({ onBack, supabase }) => {
   };
 
   return (
-    <div className="notes-wrapper bg-black text-white p-3" style={{ minHeight: '65vh' }}>
+    <div className="notes-wrapper bg-black text-white p-2 p-md-3" style={{ minHeight: '65vh' }}>
       <Container fluid>
-        {/* HEADER */}
-        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+        
+        {/* 🛠️ RESPONSIVE HEADER FIX: Stacks on mobile, row on desktop */}
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 border-bottom border-secondary pb-3 gap-3">
           <div className="d-flex align-items-center">
-            <Button variant="outline-info" size="sm" className="me-3" onClick={onBack}>← BACK</Button>
-            <h4 className="fw-bold text-info mb-0" style={{ letterSpacing: '1px' }}>SYSTEM_NOTES.LOG</h4>
+            <Button variant="outline-info" size="sm" className="me-2 me-md-3" onClick={onBack}>← BACK</Button>
+            <h4 className="fw-bold text-info mb-0" style={{ letterSpacing: '1px', fontSize: 'clamp(1rem, 4.5vw, 1.4rem)' }}>
+              SYSTEM_NOTES.LOG
+            </h4>
           </div>
-          <Button variant="info" size="sm" className="fw-bold" onClick={() => setShowModal(true)}>
+          <Button 
+            variant="info" 
+            size="sm" 
+            className="fw-bold px-3 py-2 w-sm-auto shadow-sm" 
+            style={{ whiteSpace: 'nowrap' }}
+            onClick={() => setShowModal(true)}
+          >
             + NEW_NOTE
           </Button>
         </div>
 
         {/* NOTES GRID */}
-        <Row className="g-3">
-          {notes.length === 0 ? (
-            <Col className="text-center py-5">
-              <p className="text-muted small italic">Satellite coverage active. No notes detected in Maryland...</p>
-            </Col>
-          ) : (
-            notes.map(note => (
-              <Col md={6} lg={4} key={note.id}>
-                <Card className="bg-dark border-secondary h-100 win-border shadow-sm">
-                  <Card.Body className="p-3">
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <h6 className="text-info fw-bold mb-0">{note.mission_name}</h6>
-                      <Badge bg={note.priority_level === 'High' ? 'danger' : 'secondary'} style={{fontSize: '0.6rem'}}>
-                        {note.priority_level || 'NORMAL'}
-                      </Badge>
-                    </div>
-                    <hr className="border-secondary my-2" />
-                    <p className="small text-white opacity-90 mb-3" style={{ whiteSpace: 'pre-wrap', minHeight: '60px' }}>
-                      {note.text}
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center mt-auto pt-2">
-                      <small className="text-muted" style={{ fontSize: '0.65rem' }}>
-                        {new Date(note.created_at).toLocaleDateString()}
-                      </small>
-                      <Button variant="link" className="text-danger p-0 small text-decoration-none" onClick={() => deleteNote(note.id)}>
-                        [ERASE]
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
+        {loading && notes.length === 0 ? (
+          <div className="text-center py-5"><Spinner animation="border" variant="info" /></div>
+        ) : (
+          <Row className="g-2 g-md-3">
+            {notes.length === 0 ? (
+              <Col className="text-center py-5">
+                <p className="text-muted small italic">Satellite coverage active. No notes detected in Maryland...</p>
               </Col>
-            ))
-          )}
-        </Row>
+            ) : (
+              notes.map(note => (
+                <Col xs={12} md={6} lg={4} key={note.id}>
+                  <Card className="bg-dark border-secondary h-100 win-border shadow-sm">
+                    {/* Inner black background for contrast */}
+                    <Card.Body className="p-3" style={{ background: '#000' }}>
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h6 className="text-info fw-bold mb-0 pe-2" style={{ fontSize: '0.9rem' }}>
+                          {note.mission_name}
+                        </h6>
+                        <Badge bg={note.priority_level === 'High' ? 'danger' : 'secondary'} style={{fontSize: '0.6rem'}}>
+                          {(note.priority_level || 'NORMAL').toUpperCase()}
+                        </Badge>
+                      </div>
+                      <hr className="border-secondary my-2" />
+                      <p className="small text-white opacity-90 mb-3" style={{ whiteSpace: 'pre-wrap', minHeight: '60px', fontSize: '0.85rem' }}>
+                        {note.text}
+                      </p>
+                      <div className="d-flex justify-content-between align-items-center mt-auto pt-2 border-top border-secondary">
+                        <small className="text-muted" style={{ fontSize: '0.6rem' }}>
+                          {new Date(note.created_at).toLocaleDateString()}
+                        </small>
+                        <Button variant="link" className="text-danger p-0 small text-decoration-none" style={{ fontSize: '0.7rem' }} onClick={() => deleteNote(note.id)}>
+                          [ERASE]
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
+        )}
 
-        {/* ADD NOTE MODAL */}
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered contentClassName="bg-dark text-white border-info win-border">
+        {/* ADD NOTE MODAL (Mobile Friendly) */}
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered contentClassName="bg-dark text-white border-info win-border mx-2">
           <Modal.Header closeButton closeVariant="white" className="border-secondary bg-black">
             <Modal.Title className="small fw-bold text-info">ENCRYPT_NEW_NOTE</Modal.Title>
           </Modal.Header>
@@ -151,7 +169,7 @@ const Notes = ({ onBack, supabase }) => {
                 <Form.Label className="small text-info">CONTENT_BODY</Form.Label>
                 <Form.Control 
                   as="textarea" 
-                  rows={4}
+                  rows={6}
                   className="bg-dark text-white border-secondary small" 
                   value={formData.content} 
                   onChange={e => setFormData({...formData, content: e.target.value})} 
