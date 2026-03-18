@@ -45,7 +45,6 @@ function App() {
     setTimeout(() => {
       setIsLoggedIn(true);
       setSessionKey(prev => prev + 1);
-      
       setTimeout(() => {
         setIsRedirecting(false);
         window.scrollTo(0, 0);
@@ -65,118 +64,7 @@ function App() {
   };
 
   return (
-    <div className="App" key={sessionKey} style={{ background: '#000' }}>
-      <style>{`
-        /* 🔒 VIEWPORT LOCKDOWN */
-        html, body {
-          margin: 0;
-          padding: 0;
-          overflow: hidden !important; /* Prevents the whole screen from scrolling */
-          height: 100%;
-        }
-
-        .viewport-container {
-          height: 100vh;
-          height: 100svh;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          position: relative;
-        }
-
-        /* 🔒 FIXED NAVIGATION */
-        .custom-nav { 
-          background: #c0c0c0 !important; 
-          border-bottom: 2px solid #808080;
-          position: fixed !important;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 10000;
-          height: 60px;
-        }
-
-        /* 🔒 THE SCROLLING MIDDLE AREA */
-        .intelligence-shell {
-          flex: 1;
-          background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
-          background-attachment: fixed;
-          padding-top: 70px; /* Space for fixed nav */
-          padding-bottom: 40px; /* Space for fixed footer */
-          overflow-y: auto !important; /* CONTENT SCROLLS HERE */
-          -webkit-overflow-scrolling: touch;
-          color: #fff;
-          -webkit-transform: translateZ(0);
-          transform: translateZ(0);
-        }
-        
-        /* 🔒 FIXED TASKBAR */
-        .taskbar-status {
-          position: fixed !important; 
-          bottom: 0; 
-          left: 0;
-          width: 100%; 
-          height: 30px;
-          background: #c0c0c0; 
-          border-top: 2px solid #dfdfdf;
-          display: flex; 
-          align-items: center; 
-          padding: 0 15px;
-          font-size: 0.7rem; 
-          font-weight: bold; 
-          z-index: 10000;
-          color: #333;
-          padding-bottom: env(safe-area-inset-bottom);
-          box-sizing: content-box;
-        }
-
-        .win-content-area {
-          background-color: #000 !important;
-          color: #fff !important;
-          min-height: 60vh;
-          border: 1px solid #30363d;
-        }
-
-        .win-border { 
-          background: #c0c0c0; border: 2px solid;
-          border-color: #dfdfdf #000 #000 #dfdfdf;
-          box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
-          padding: 2px;
-          margin-top: 20px;
-        }
-
-        .win-header {
-          background: linear-gradient(90deg, #000080, #1084d0);
-          color: white; font-weight: bold; padding: 4px 8px; font-size: 0.75rem;
-          display: flex; justify-content: space-between;
-          text-transform: uppercase;
-        }
-
-        .brand-sj { color: #000080 !important; cursor: pointer; letter-spacing: 1px; }
-        .nav-link { color: #000 !important; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-        .active-link { background: #dfdfdf; border: 1px inset #808080; color: #000080 !important; }
-
-        @media (max-width: 768px) {
-          .custom-tabs {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px;
-            gap: 5px;
-          }
-          .custom-tabs .nav-item { flex: 0 0 auto; }
-          .custom-tabs .nav-link {
-            color: #000 !important; font-weight: bold; font-size: 0.7rem;
-            background: #c0c0c0; border: 2px solid;
-            border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
-          }
-          .custom-tabs .nav-link.active {
-            color: #00f2ff !important; background: #000 !important; border-bottom: none !important;
-          }
-        }
-      `}</style>
-
+    <div className="App" key={sessionKey}>
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
@@ -185,39 +73,43 @@ function App() {
           <Navbar 
             expand="lg" 
             expanded={navExpanded} 
-            onToggle={(next) => setNavExpanded(next)} 
-            className="custom-nav py-2 px-4"
+            className="custom-nav px-4"
           >
             <Container fluid>
               <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
                 <i className="bi bi-shield-shaded me-2"></i>AXON_NODE
               </Navbar.Brand>
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Toggle 
+                aria-controls="basic-navbar-nav" 
+                onClick={() => setNavExpanded(!navExpanded)} 
+              />
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mx-auto fw-medium">
                   {['home', 'books', 'gardening', 'coding', 'notes', 'diary', 'important'].map((id) => (
-                    <div 
+                    <Nav.Link 
                       key={id}
-                      className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`} 
+                      className={`px-3 ${currentView === id ? 'active-link' : ''}`} 
                       onClick={() => {
                         setCurrentView(id);
                         setNavExpanded(false); 
                       }}
                     >
                       {id.toUpperCase()}
-                    </div>
+                    </Nav.Link>
                   ))}
                 </Nav>
-                <Button variant="outline-dark" size="sm" onClick={() => { handleLogout(); setNavExpanded(false); }}>LOGOFF</Button>
+                <div className="mt-3 mt-lg-0 text-center">
+                  <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
+                </div>
               </Navbar.Collapse>
             </Container>
           </Navbar>
 
           {/* SCROLLING MIDDLE AREA */}
           <main className="intelligence-shell">
-            <Container className="main-content pb-5">
+            <Container className="main-content">
               {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
-                <div className="win-border shadow-lg">
+                <div className="win-border">
                   <div className="win-header">
                     <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
                     <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
@@ -232,7 +124,7 @@ function App() {
                   </div>
                 </div>
               ) : (
-                <div className="page-transition-wrapper py-4">
+                <div className="page-transition-wrapper">
                   {currentView === 'home' && <Home />}
                 </div>
               )}
@@ -241,9 +133,11 @@ function App() {
 
           {/* FOOTER - FIXED OUTSIDE THE SHELL */}
           <div className="taskbar-status">
-            <span className="me-2 me-md-3 text-uppercase">NODE: KANDY_LKA</span>
-            <span className="text-primary me-2 me-md-3 text-uppercase d-none d-sm-inline">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'OFFLINE'}</span>
-            <span className="ms-auto">{liveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span className="me-2 text-uppercase">NODE: KANDY_LKA</span>
+            <span className="text-primary d-none d-md-inline ms-2">UPLINK: MARYLAND_ENCRYPTED</span>
+            <span className="ms-auto time-display">
+               {liveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
           </div>
         </div>
       )}
