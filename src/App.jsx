@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { createClient } from '@supabase/supabase-js'; 
 
@@ -18,11 +18,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 // --- SUPABASE_CONFIG ---
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-
-let supabase = null;
-if (SUPABASE_URL && SUPABASE_KEY) {
-  supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-}
+const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true');
@@ -37,33 +33,38 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // 🛠️ FIX: Sync localStorage when view changes
+  useEffect(() => {
+    localStorage.setItem('currentView', currentView);
+  }, [currentView]);
+
   const handleLogin = () => {
     setIsRedirecting(true);
-    localStorage.setItem('isLoggedIn', 'true');
     
-    // Safety: Clear any stuck scroll positions
-    window.scrollTo(0, 0);
-
+    // 1. Clear the deck
     setTimeout(() => {
+      localStorage.setItem('isLoggedIn', 'true');
       setIsLoggedIn(true);
-      setSessionKey(prev => prev + 1);
+      setSessionKey(prev => prev + 1); // Force brand new render tree
+      
+      // 2. Small buffer to let the Home component mount
       setTimeout(() => {
         setIsRedirecting(false);
-      }, 150);
-    }, 600); // Increased to 600ms for heavy processing
+        // Kick the browser to recalculate height
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+    }, 500);
   };
 
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
     setIsRedirecting(false);
-    setSessionKey(prev => prev + 1);
+    window.location.reload(); // Hard reset is safest for memory clearing
   };
 
   const renderView = () => {
-    // Protect against missing Supabase
     const props = { onBack: () => setCurrentView('home'), supabase };
-
     switch (currentView) {
       case 'coding': return <Coding {...props} />;
       case 'notes': return <Notes {...props} />;
@@ -76,12 +77,11 @@ function App() {
   };
 
   return (
-    <div className="App" key={sessionKey} style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff' }}>
+    <div className="App" style={{ backgroundColor: '#000', minHeight: '100vh' }}>
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
-        <div className="viewport-lock" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-          
+        <div className="viewport-lock" key={sessionKey}>
           <Navbar expand="lg" expanded={navExpanded} className="custom-nav px-4">
             <Container fluid>
               <Navbar.Brand className="fw-bold brand-sj" onClick={() => setCurrentView('home')}>
@@ -100,34 +100,34 @@ function App() {
                     </Nav.Link>
                   ))}
                 </Nav>
-                <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
+                <div className="text-center mt-2 mt-lg-0">
+                  <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
+                </div>
               </Navbar.Collapse>
             </Container>
           </Navbar>
 
-          <main className="intelligence-shell" style={{ flex: 1, overflowY: 'auto' }}>
-            <Container className="py-4">
-              {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
-                <div className="win-border">
+          <main className="intelligence-shell">
+            <Container>
+              {currentView === 'home' ? (
+                <Home />
+              ) : (
+                <div className="win-border shadow-lg">
                   <div className="win-header">
                     <span>SYSTEM_ACTIVE // {currentView.toUpperCase()}</span>
-                    <span onClick={() => setCurrentView('home')} style={{cursor:'pointer'}}>X</span>
+                    <span onClick={() => setCurrentView('home')} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
                   </div>
                   <div className="win-content-area p-3">
                     {renderView()}
                   </div>
-                </div>
-              ) : (
-                <div className="page-transition-wrapper">
-                  <Home />
                 </div>
               )}
             </Container>
           </main>
 
           <div className="taskbar-status">
-            <span>NODE: KANDY_LKA</span>
-            <span className="ms-auto">{liveTime.toLocaleTimeString()}</span>
+            <span className="me-2">NODE: KANDY_LKA</span>
+            <span className="ms-auto font-monospace">{liveTime.toLocaleTimeString([], { hour12: false })}</span>
           </div>
         </div>
       )}
