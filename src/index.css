@@ -1,103 +1,84 @@
 /* --- 1. CORE VARIABLES --- */
 :root {
   --neon-blue: #00f2fe;
-  --neon-purple: #a855f7;
-  --accent-blue: #4facfe;
-  --bg-dark: #050505;
   --bg-deep: #0a0a0b;
   --border-color: rgba(255, 255, 255, 0.15);
-  --glass-bg: rgba(255, 255, 255, 0.07);
   --blur: blur(12px);
 }
 
-/* --- 2. VIEWPORT LOCKDOWN --- */
+/* --- 2. THE LOCKDOWN --- */
 html, body {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   overflow: hidden !important;
   height: 100% !important;
   background-color: #000;
 }
 
-.viewport-container {
-  height: 100vh;
-  height: 100svh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
+.viewport-lock {
+  height: 100vh; height: 100svh; /* Safari Unit */
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
 }
 
-/* --- 3. NAVIGATION (SAFARI MOBILE FIX) --- */
+/* --- 3. NAVIGATION (IPHONE STACKING FIX) --- */
 .custom-nav {
   position: fixed !important;
   top: 0; left: 0; right: 0;
   z-index: 10000;
   background: #c0c0c0 !important;
   border-bottom: 2px solid #808080;
-  height: auto;
   min-height: 60px;
 }
 
 @media (max-width: 991px) {
   .navbar-collapse {
-    background: #c0c0c0;
-    padding: 15px;
+    background: #c0c0c0; padding: 15px;
     border-top: 1px solid #808080;
-    max-height: 70vh;
-    overflow-y: auto;
+    max-height: 70vh; overflow-y: auto;
   }
   .nav-link {
-    color: #000 !important;
-    padding: 10px 0 !important;
+    color: #000 !important; font-weight: bold;
+    padding: 12px 0 !important;
     border-bottom: 1px solid rgba(0,0,0,0.05);
   }
 }
 
-.brand-sj { color: #000080 !important; font-weight: 800; cursor: pointer; }
+.brand-sj { font-weight: 800; color: #000080 !important; cursor: pointer; }
 .active-link { background: #dfdfdf !important; border: 1px inset #808080; color: #000080 !important; }
 
-/* --- 4. SCROLLING SHELL --- */
+/* --- 4. THE SCROLLING CENTER --- */
 .intelligence-shell {
   flex: 1;
   background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
-  padding-top: 70px;
-  padding-bottom: 45px;
+  padding-top: 80px; padding-bottom: 50px;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
-  -webkit-transform: translateZ(0);
+  -webkit-transform: translateZ(0); /* GPU Acceleration */
 }
 
-/* --- 5. TASKBAR (RIGHT-SIDE CUTOFF FIX) --- */
+/* --- 5. TASKBAR (TIME CUTOFF FIX) --- */
 .taskbar-status {
   position: fixed !important;
   bottom: 0; left: 0; right: 0;
-  height: 30px;
-  background: #c0c0c0;
+  height: 35px !important;
+  background: #c0c0c0 !important;
   border-top: 2px solid #dfdfdf;
-  display: flex;
-  align-items: center;
-  padding: 0 15px !important;
-  z-index: 10000;
-  color: #333 !important;
-  font-weight: bold;
-  font-size: 0.7rem;
-  padding-bottom: env(safe-area-inset-bottom);
-  box-sizing: content-box;
+  display: flex !important; align-items: center !important;
+  padding: 0 20px !important; /* Safety margin */
+  z-index: 10000 !important;
+  color: #333 !important; font-weight: bold; font-size: 0.7rem;
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  box-sizing: content-box !important;
 }
 
-.time-display {
-  margin-right: 10px; /* Pulls time away from the iPhone edge */
-  white-space: nowrap;
-}
+.time-display { margin-right: 15px; white-space: nowrap; }
 
-/* --- 6. WINDOWS 98 ELEMENTS --- */
-.win-border {
+/* --- 6. WIN98 UI --- */
+.win-border { 
   background: #c0c0c0; border: 2px solid;
   border-color: #dfdfdf #000 #000 #dfdfdf;
   box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
-  padding: 2px;
-  margin-top: 20px;
+  padding: 2px; margin-top: 20px;
 }
 
 .win-header {
@@ -106,4 +87,4 @@ html, body {
   display: flex; justify-content: space-between;
 }
 
-.win-content-area { background-color: #000; min-height: 50vh; border: 1px solid #30363d; }
+.win-content-area { background-color: #000 !important; min-height: 50vh; border: 1px solid #30363d; }
