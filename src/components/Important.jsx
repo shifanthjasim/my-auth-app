@@ -1,94 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Table, Spinner } from 'react-bootstrap';
 
-const Important = ({ onBack }) => {
-  const [groceries, setGroceries] = useState(() => JSON.parse(localStorage.getItem('sj_groceries')) || []);
-  const [events, setEvents] = useState(() => JSON.parse(localStorage.getItem('sj_events')) || []);
+const Important = ({ onBack, supabase }) => {
+  const [groceries, setGroceries] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // 1. Fetch Data on Mount
   useEffect(() => {
+    fetchHubData();
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('sj_groceries', JSON.stringify(groceries));
-    localStorage.setItem('sj_events', JSON.stringify(events));
-  }, [groceries, events]);
+  const fetchHubData = async () => {
+    setLoading(true);
+    try {
+      const { data: grocData } = await supabase.from('groceries').select('*').order('created_at', { ascending: false });
+      const { data: eventData } = await supabase.from('events').select('*').order('date', { ascending: true });
+      if (grocData) setGroceries(grocData);
+      if (eventData) setEvents(eventData);
+    } catch (error) {
+      console.error("Error fetching Hub data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // 2. Real-time Clock Helper
   const formatTime = (tz) => {
     return currentTime.toLocaleTimeString('en-US', {
       timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
     });
   };
 
-  const addGrocery = (e) => {
+  // 3. Supabase Actions: Groceries
+  const addGrocery = async (e) => {
     e.preventDefault();
-    const item = e.target.item.value;
-    if (item) setGroceries([...groceries, { id: Date.now(), name: item }]);
+    const name = e.target.item.value;
+    if (!name) return;
+
+    const { data, error } = await supabase.from('groceries').insert([{ name }]).select();
+    if (!error) setGroceries([data[0], ...groceries]);
     e.target.reset();
   };
 
-  const addEvent = (e) => {
+  const deleteGrocery = async (id) => {
+    const { error } = await supabase.from('groceries').delete().eq('id', id);
+    if (!error) setGroceries(groceries.filter(g => g.id !== id));
+  };
+
+  // 4. Supabase Actions: Events
+  const addEvent = async (e) => {
     e.preventDefault();
-    const newEvent = {
-      id: Date.now(),
-      title: e.target.title.value,
-      date: e.target.date.value,
-    };
-    setEvents([...events, newEvent].sort((a, b) => new Date(a.date) - new Date(b.date)));
+    const title = e.target.title.value;
+    const date = e.target.date.value;
+
+    const { data, error } = await supabase.from('events').insert([{ title, date }]).select();
+    if (!error) setEvents([...events, data[0]].sort((a, b) => new Date(a.date) - new Date(b.date)));
     e.target.reset();
+  };
+
+  const deleteEvent = async (id) => {
+    const { error } = await supabase.from('events').delete().eq('id', id);
+    if (!error) setEvents(events.filter(ev => ev.id !== id));
   };
 
   return (
     <div className="page-view-wrapper">
       <Container className="py-4">
-        {/* TOP HEADER */}
+        {/* HEADER */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div className="d-flex align-items-center">
             <Button variant="outline-info" className="me-3 back-btn" onClick={onBack}>BACK</Button>
             <div>
               <h2 className="terminal-text mb-0 scanline-text">IMPORTANT_HUB</h2>
-              <span className="small opacity-50 text-uppercase tracking-widest">Command Center // Kandy Node</span>
+              <span className="small opacity-50 text-uppercase">Supabase Live Uplink // Kandy Node</span>
             </div>
           </div>
-          <div className="text-end d-none d-md-block">
-            <div className="blink-dot d-inline-block me-2"></div>
-            <span className="small terminal-text opacity-75">SYSTEM_LIVE</span>
-          </div>
+          {loading && <Spinner animation="border" size="sm" variant="info" />}
         </div>
 
         <Row className="g-3">
-          {/* 🕒 TIMEZONE SYNC - TOP ROW */}
+          {/* TIMEZONE SYNC */}
           <Col md={6}>
             <Card className="hud-card">
               <Card.Body>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <span className="sig-label">U.S. COMPANY SYNC (MARYLAND)</span>
-                  <span className="small text-info">EST</span>
-                </div>
-                <div className="display-5 terminal-text scanline-text text-info">
-                  {formatTime('America/New_York')}
-                </div>
+                <span className="sig-label">U.S. SYNC (MARYLAND)</span>
+                <div className="display-5 terminal-text scanline-text text-info">{formatTime('America/New_York')}</div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6}>
+            <Card className="hud-card">
+              <Card.Body>
+                <span className="sig-label">FAMILY SYNC (NZ)</span>
+                <div className="display-5 terminal-text scanline-text text-primary">{formatTime('Pacific/Auckland')}</div>
               </Card.Body>
             </Card>
           </Col>
 
-          <Col md={6}>
-            <Card className="hud-card">
-              <Card.Body>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <span className="sig-label">FAMILY CONNECTION (NZ)</span>
-                  <span className="small text-primary">NZDT</span>
-                </div>
-                <div className="display-5 terminal-text scanline-text text-primary">
-                  {formatTime('Pacific/Auckland')}
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* 📅 CRITICAL EVENTS - MAIN AREA */}
+          {/* EVENTS TABLE */}
           <Col md={8}>
             <Card className="hud-card h-100">
               <Card.Body>
@@ -96,32 +109,28 @@ const Important = ({ onBack }) => {
                 <Form onSubmit={addEvent} className="row g-2 mb-4">
                   <Col><Form.Control name="title" placeholder="TASK_ID" className="hud-input" required /></Col>
                   <Col><Form.Control name="date" type="date" className="hud-input" required /></Col>
-                  <Col xs="auto"><Button type="submit" variant="info" className="px-4">ADD</Button></Col>
+                  <Col xs="auto"><Button type="submit" variant="info">ADD</Button></Col>
                 </Form>
                 
-                <div className="table-responsive" style={{maxHeight: '300px'}}>
-                  <Table className="hud-table" variant="dark">
-                    <thead>
-                      <tr>
-                        <th>OBJECTIVE</th>
-                        <th className="text-end">DEADLINE</th>
+                <Table className="hud-table" variant="dark">
+                  <thead>
+                    <tr><th>OBJECTIVE</th><th className="text-end">DEADLINE</th><th /></tr>
+                  </thead>
+                  <tbody>
+                    {events.map(ev => (
+                      <tr key={ev.id}>
+                        <td className="text-white opacity-75">{ev.title}</td>
+                        <td className="text-info text-end font-monospace">{ev.date}</td>
+                        <td className="text-end"><Button variant="link" className="text-danger p-0" onClick={() => deleteEvent(ev.id)}>×</Button></td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {events.map(ev => (
-                        <tr key={ev.id}>
-                          <td className="text-white opacity-75">{ev.title}</td>
-                          <td className="text-info text-end font-monospace">{ev.date}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
+                    ))}
+                  </tbody>
+                </Table>
               </Card.Body>
             </Card>
           </Col>
 
-          {/* 📦 GROCERY RADAR */}
+          {/* GROCERY LIST */}
           <Col md={4}>
             <Card className="hud-card h-100">
               <Card.Body>
@@ -132,14 +141,12 @@ const Important = ({ onBack }) => {
                     <Button type="submit" variant="outline-info">ADD</Button>
                   </div>
                 </Form>
-                <div style={{maxHeight: '280px', overflowY: 'auto'}}>
-                  {groceries.map(g => (
-                    <div key={g.id} className="d-flex justify-content-between align-items-center p-2 mb-2 border border-secondary border-opacity-25 rounded bg-black">
-                      <span className="small opacity-75">{g.name}</span>
-                      <span className="text-danger cursor-pointer px-2" onClick={() => setGroceries(groceries.filter(i => i.id !== g.id))}>×</span>
-                    </div>
-                  ))}
-                </div>
+                {groceries.map(g => (
+                  <div key={g.id} className="d-flex justify-content-between align-items-center p-2 mb-2 bg-black border border-secondary border-opacity-25 rounded">
+                    <span className="small opacity-75">{g.name}</span>
+                    <span className="text-danger cursor-pointer" onClick={() => deleteGrocery(g.id)}>×</span>
+                  </div>
+                ))}
               </Card.Body>
             </Card>
           </Col>
