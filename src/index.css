@@ -1,0 +1,529 @@
+/* --- 1. CORE VARIABLES --- */
+:root {
+  --neon-blue: #00f2fe;
+  --neon-purple: #a855f7;
+  --accent-blue: #4facfe;
+  --bg-dark: #050505;
+  --bg-deep: #0a0a0b;
+  --bg-slate: #0f172a;
+  --border-color: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --blur: blur(12px);
+}
+
+/* --- 2. GLOBAL RESET & VISIBILITY --- */
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-deep);
+  color: #ffffff !important; /* Force global white text */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, p, span {
+  color: #ffffff !important; /* Prevents Bootstrap from graying out text */
+}
+
+
+/* --- 4. NAVIGATION (NO SLIDING/STATIC) --- */
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border-color);
+  transform: none !important;
+  animation: none !important;
+  transition: all 0.3s ease;
+}
+
+.nav-scrolled {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+}
+
+.brand-sj {
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent-blue), var(--neon-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.nav-link {
+  position: relative;
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  opacity: 1;
+  color: var(--neon-blue) !important;
+}
+
+/* --- 5. PRISM WHITE HERO (CLEAN & PRO) --- */
+.hero-minimal {
+  padding-top: 140px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  min-height: 280px; 
+}
+
+.welcome-static {
+  display: inline-block;
+  color: #ffffff !important;
+  font-weight: 200; /* Thinner for a modern look */
+  font-size: 3.5rem;
+  letter-spacing: -2px;
+  opacity: 0.9;
+}
+
+.animated-letter {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 3.5rem;
+  
+  /* Prism White: White base with Silver and Electric Blue accents */
+  background: linear-gradient(
+    90deg, 
+    #ffffff 0%, 
+    #ffffff 45%, 
+    var(--neon-blue) 50%, 
+    #ffffff 55%, 
+    #ffffff 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  
+  /* Smoother, slower Flip Entrance */
+  opacity: 0;
+  transform: translateY(10px) rotateX(-20deg);
+  
+  animation: 
+    cleanReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards,
+    prismShimmer 5s linear infinite;
+}
+
+/* 1. Subtle Rise & Fade Entrance */
+@keyframes cleanReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+/* 2. Slow, Elegant Prism Shimmer */
+@keyframes prismShimmer {
+  0% { background-position: -100% center; }
+  100% { background-position: 150% center; }
+}
+
+/* Cleanup for the status bar underneath */
+.hero-status {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+
+/* --- 6. WISDOM STREAM (UPWARD CRAWL) --- */
+.wisdom-stream-container {
+  height: 55vh;
+  margin-top: 40px;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  /* Fades quotes in/out at the edges */
+  mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+}
+
+.stream-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scrollUp 80s linear infinite;
+}
+
+.quote-box {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.quote-box:hover {
+  background: rgba(79, 172, 254, 0.15) !important;
+  border-color: var(--neon-blue) !important;
+  transform: scale(1.03);
+}
+
+.q-text {
+  font-size: 1.25rem;
+  font-style: italic;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.q-author {
+  font-size: 0.9rem;
+  color: var(--accent-blue) !important;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* --- 7. BOOK VAULT --- */
+.book-card-alt {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 18px !important;
+  transition: 0.3s ease;
+}
+
+.book-card-alt:hover {
+  transform: translateY(-8px);
+  border-color: var(--neon-blue) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.category-tag { font-size: 0.75rem; color: var(--neon-blue) !important; font-weight: bold; }
+.page-indicator { font-size: 1.2rem; font-weight: bold; color: var(--neon-blue) !important; }
+.hall-of-fame { border-left: 5px solid #ffc107 !important; }
+
+/* --- 8. FOOTER & UTILS --- */
+.footer-simple {
+  padding: 60px 0 40px;
+  text-align: center;
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.footer-simple strong {
+  color: var(--neon-blue) !important;
+}
+
+.back-btn {
+  border-color: var(--neon-blue) !important;
+  color: var(--neon-blue) !important;
+  z-index: 10;
+}
+
+/* --- 9. KEYFRAMES --- */
+@keyframes letterReveal { to { opacity: 1; transform: translateY(0) rotateX(0); } }
+@keyframes gradientFlow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+@keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+
+/* --- 10. RESPONSIVE --- */
+@media (max-width: 768px) {
+  .hero-minimal { padding-top: 110px; }
+  .display-3 { font-size: 2.4rem; }
+  .quote-box { width: 95%; padding: 20px; }
+  .wisdom-stream-container { height: 65vh; }
+}
+
+/* --- ULTIMATE SIGNATURE FOOTER --- */
+.footer-signature {
+  padding: 80px 5% 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: transparent;
+  position: relative;
+  z-index: 10;
+}
+
+.footer-line {
+  width: 100%;
+  max-width: 800px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  margin-bottom: 20px;
+}
+
+.signature-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.sig-left, .sig-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.sig-label {
+  font-size: 0.65rem;
+  color: var(--accent-blue) !important;
+  letter-spacing: 3px;
+  font-family: var(--font-mono);
+}
+
+.sig-name {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #fff, var(--neon-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.sig-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-color);
+}
+
+.sig-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff !important;
+}
+
+.sig-location {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-family: var(--font-mono);
+}
+
+.system-uptime {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.blink-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@media (max-width: 768px) {
+  .signature-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  .sig-divider {
+    width: 50px;
+    height: 1px;
+  }
+}
+
+.garden-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.garden-section-header h4 {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.garden-scroll-area {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.garden-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  transition: 0.3s;
+}
+
+.garden-card:hover {
+  background: rgba(34, 197, 94, 0.05) !important; /* Subtle green glow */
+  border-color: #22c55e !important;
+  transform: translateX(5px);
+}
+
+/* --- DIARY TIMELINE DESIGN --- */
+.diary-timeline {
+  position: relative;
+  padding-left: 30px;
+  border-left: 2px solid var(--border-color);
+  margin-left: 15px;
+}
+
+.diary-meta {
+  position: relative;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.diary-dot {
+  position: absolute;
+  left: -37px;
+  width: 12px;
+  height: 12px;
+  background: var(--neon-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.diary-date {
+  font-weight: bold;
+  font-family: var(--font-mono);
+  color: var(--neon-blue);
+}
+
+.diary-time {
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.diary-card {
+  transition: 0.3s;
+}
+
+.diary-card:hover {
+  transform: translateX(10px);
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.diary-content {
+  line-height: 1.8;
+  white-space: pre-wrap; /* Preserves line breaks from textarea */
+}
+
+.shadow-cyan {
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+}
+
+/* --- PAGE TRANSITION ANIMATION --- */
+/* --- ENHANCED SMOOTH TRANSITION --- */
+.page-transition-wrapper {
+  /* 0.8s is the 'sweet spot' for a slow, intentional feel */
+  animation: silkyReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  filter: blur(10px); 
+  transform: translateY(20px) scale(0.99);
+  will-change: transform, opacity, filter; /* Optimizes browser performance */
+}
+
+@keyframes silkyReveal {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  height: 2px;
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+  
+  /* This makes the underline grow from the center slowly */
+  width: 0%;
+  animation: underlineGrow 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes underlineGrow {
+  to { width: 70%; }
+}
+
+/* --- LIVING BACKGROUND --- */
+.shared-viewport-root {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  transition: background-color 2s ease;
+  overflow: hidden;
+}
+
+/* Background Gradients with Pulse Animation */
+.shared-viewport-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(79, 172, 254, 0.2) 0, transparent 50%), 
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
+  animation: bgPulse 10s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* --- WORK MODE (5 PM - 2 AM) --- */
+.work-mode {
+  background-color: #050505; /* Deeper black for focus */
+}
+
+.work-mode::before {
+  /* Change to a subtle "Alert" orange/red pulse for energy */
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(255, 99, 71, 0.1) 0, transparent 50%), 
+    radial-gradient(at 100% 100%, rgba(0, 242, 254, 0.1) 0, transparent 50%);
+  animation-duration: 6s; /* Faster pulse during work */
+}
+
+/* --- REST MODE (Outside Work Hours) --- */
+.rest-mode {
+  background-color: #0f172a; /* Soft slate blue for relaxation */
+}
+
+.rest-mode::before {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(79, 172, 254, 0.2) 0, transparent 50%), 
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
+  animation-duration: 15s; /* Very slow, calming pulse */
+}
