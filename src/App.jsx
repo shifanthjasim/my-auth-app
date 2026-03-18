@@ -26,7 +26,8 @@ function App() {
   const [liveTime, setLiveTime] = useState(new Date());
   const [navExpanded, setNavExpanded] = useState(false);
   
-  // ⚡ THE REFRESH FIX: Forces React to re-draw the dashboard after login
+  // ⚡ THE FIX: Forces a clean transition to prevent the "Blank Screen"
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
   useEffect(() => {
@@ -39,10 +40,20 @@ function App() {
   }, [currentView]);
 
   const handleLogin = () => {
+    // 1. Enter redirecting state
+    setIsRedirecting(true);
+    
+    // 2. Set Auth in Background
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true');
-    setSessionKey(prev => prev + 1); // 🛰️ The "Wake Up" signal
-    setCurrentView('home'); 
+    setCurrentView('home');
+
+    // 3. 🚀 THE "FLUSH": Wait 150ms for Login to unmount, then show Dashboard
+    setTimeout(() => {
+      setIsRedirecting(false);
+      setSessionKey(prev => prev + 1);
+      window.scrollTo(0, 0); // Reset scroll for iPhone
+    }, 150);
   };
 
   const handleLogout = () => {
@@ -89,7 +100,7 @@ function App() {
           text-transform: uppercase;
         }
 
-        /* 📱 MOBILE TAB SCROLL FIX */
+        /* 📱 MOBILE TAB SCROLL & VISIBILITY */
         @media (max-width: 768px) {
           .custom-tabs {
             display: flex !important;
@@ -102,7 +113,6 @@ function App() {
           .custom-tabs .nav-item { flex: 0 0 auto; }
         }
 
-        /* 🕵️‍♂️ TAB VISIBILITY PATCH */
         .custom-tabs .nav-link {
           color: #000 !important; font-weight: bold; font-size: 0.7rem;
           background: #c0c0c0; border: 2px solid;
@@ -129,7 +139,8 @@ function App() {
         }
       `}</style>
 
-      {!isLoggedIn ? (
+      {/* 🕵️‍♂️ LOGIC: If redirecting or not logged in, stay on Login screen */}
+      {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
         <div className="intelligence-shell">

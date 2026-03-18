@@ -9,7 +9,6 @@ const Login = ({ onLoginSuccess }) => {
   const [scanProgress, setScanProgress] = useState(0);
   const [flavorText, setFlavorText] = useState('');
 
-  // 📂 CINEMATIC & FUNNY MESSAGES (Cycles every 1s)
   const funnyMessages = [
     "ESTABLISHING SECURE HANDSHAKE...",
     "HIDING BROWSER HISTORY FROM ISP...",
@@ -23,7 +22,6 @@ const Login = ({ onLoginSuccess }) => {
     "SYSTEM_READY. WELCOME OPERATIVE."
   ];
 
-  // 📂 TECHNICAL LOGS (Timed for ~8-10 seconds total)
   const terminalCodes = [
     { text: ">> KERNEL_UPLINK: ONLINE", delay: 200 },
     { text: ">> NODE_ID: KANDY_LKA_STATION_04", delay: 400 },
@@ -50,7 +48,6 @@ const Login = ({ onLoginSuccess }) => {
   const startAdvancedSequence = () => {
     setIsInitializing(true);
     
-    // 🎭 Cycle funny flavor text
     let msgIndex = 0;
     const msgInterval = setInterval(() => {
       if (msgIndex < funnyMessages.length) {
@@ -61,7 +58,6 @@ const Login = ({ onLoginSuccess }) => {
       }
     }, 900);
 
-    // 📟 Run the Technical Terminal Logs
     let logIndex = 0;
     const showNextLog = () => {
       if (logIndex < terminalCodes.length) {
@@ -70,10 +66,9 @@ const Login = ({ onLoginSuccess }) => {
         setTimeout(showNextLog, terminalCodes[logIndex].delay);
         logIndex++;
       } else {
-        // 🚀 THE CLEAN EXIT: Small delay before entering App.jsx
+        // 🚀 THE CLEAN EXIT HANDSHAKE
         setTimeout(() => {
           onLoginSuccess();
-          window.scrollTo(0, 0); 
         }, 800);
       }
     };
@@ -84,55 +79,57 @@ const Login = ({ onLoginSuccess }) => {
     <div style={styles.container}>
       <style>{`
         @keyframes scanline { 0% { top: 0; } 100% { top: 100%; } }
-        @keyframes glow { 0% { text-shadow: 0 0 5px #0f0; } 50% { text-shadow: 0 0 15px #0f0; } 100% { text-shadow: 0 0 5px #0f0; } }
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulse-border { 0% { border-color: rgba(0, 242, 255, 0.2); } 50% { border-color: rgba(0, 242, 255, 0.8); } 100% { border-color: rgba(0, 242, 255, 0.2); } }
-        
+        @keyframes fingerprint-glow { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.3; transform: scale(0.9); } }
+        @keyframes blinker { 50% { opacity: 0; } }
         .hacker-grid { 
           background-image: linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px), 
                             linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px); 
           background-size: 30px 30px; 
         }
         .scanline {
-          width: 100%; height: 4px; background: rgba(0, 255, 0, 0.07);
+          width: 100%; height: 4px; background: rgba(0, 255, 0, 0.1);
           position: absolute; animation: scanline 4s linear infinite; z-index: 10;
         }
-        .blink { animation: glow 1.5s infinite; }
-        .funny-msg { animation: slideUp 0.4s ease-out; color: #00f2ff; font-weight: 800; letter-spacing: 2px; font-size: 0.75rem; }
+        .fingerprint-icon {
+          font-size: 4rem; color: #0f0; animation: fingerprint-glow 2s infinite;
+          margin-bottom: 20px; text-shadow: 0 0 20px #0f0;
+        }
+        .blink-cursor { animation: blinker 1s step-end infinite; }
+        .funny-msg { color: #00f2ff; font-weight: 800; letter-spacing: 2px; font-size: 0.75rem; text-transform: uppercase; }
       `}</style>
 
       {isInitializing ? (
-        /* 🕵️‍♂️ THE GOD-MODE TERMINAL */
         <div style={styles.terminalWrapper} className="hacker-grid">
           <div className="scanline" />
           
           <div style={styles.terminalHeader}>
             <span style={{ color: '#0f0' }}>● AXON_SECURE_UPLINK</span>
-            <span style={{ color: '#444' }}>STATION: KANDY_LKA</span>
+            <span style={{ color: '#444' }}>STATUS: ENCRYPTING</span>
           </div>
 
           <div style={styles.mainLoadingArea}>
-            {/* Dynamic Flavor Text Section */}
-            <div style={{ height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <p className="funny-msg text-center mb-0">{flavorText}</p>
+            {/* 🛡️ BIOMETRIC SCANNER ANIMATION */}
+            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+               <i className="bi bi-fingerprint fingerprint-icon"></i>
+               <p className="funny-msg">{flavorText}</p>
             </div>
 
             <div style={styles.logWrapper}>
               {loadingLogs.map((log, i) => (
                 <div key={i} style={{ 
-                  color: log.includes('DANGER') || log.includes('WARNING') ? '#ff003c' : '#0f0', 
-                  marginBottom: '8px', fontSize: '0.8rem', fontWeight: 'bold', fontFamily: 'monospace'
+                  color: log.includes('DANGER') ? '#ff003c' : '#0f0', 
+                  marginBottom: '6px', fontSize: '0.75rem', fontFamily: 'monospace'
                 }}>
                   {log}
                 </div>
               ))}
-              <div style={{ color: '#0f0' }} className="blink">█</div>
+              <span style={{ color: '#0f0' }} className="blink-cursor">█</span>
             </div>
           </div>
 
           <div style={styles.footerSection}>
              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: '#0f0', marginBottom: '8px', fontWeight: 'bold' }}>
-                <span>DECRYPTING_NODE_DATA</span>
+                <span>DATA_STREAM_DECRYPTED</span>
                 <span>{Math.round(scanProgress)}%</span>
              </div>
              <div style={styles.progressTrack}>
@@ -141,11 +138,10 @@ const Login = ({ onLoginSuccess }) => {
           </div>
         </div>
       ) : (
-        /* ⚪ THE ULTRA-MODERN PREMIUM LOGIN */
         <div style={styles.glassCard}>
           <div style={styles.logoHex}>SJ</div>
           <h2 style={styles.title}>AXON_NODE</h2>
-          <p style={styles.subtitle}>System Access Protocol 4.0.2</p>
+          <p style={styles.subtitle}>Enter Passcode for Central Command</p>
 
           <form onSubmit={handleLogin} style={{ width: '100%' }}>
             <input 
@@ -172,38 +168,38 @@ const styles = {
     background: '#010204', overflow: 'hidden', padding: '15px'
   },
   glassCard: {
-    width: '100%', maxWidth: '380px', padding: '55px 35px',
-    background: 'rgba(10, 12, 18, 0.9)', backdropFilter: 'blur(30px)',
+    width: '100%', maxWidth: '380px', padding: '50px 30px',
+    background: 'rgba(10, 12, 18, 0.95)', backdropFilter: 'blur(30px)',
     borderRadius: '40px', border: '1px solid rgba(255, 255, 255, 0.08)',
     textAlign: 'center', boxShadow: '0 30px 100px rgba(0,0,0,0.9)'
   },
   logoHex: {
-    width: '85px', height: '85px', background: 'linear-gradient(135deg, #00f2ff, #0060ff)',
-    borderRadius: '26px', margin: '0 auto 30px', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontSize: '2.2rem', fontWeight: '900', color: '#fff',
-    boxShadow: '0 0 50px rgba(0, 242, 255, 0.25)'
+    width: '80px', height: '80px', background: 'linear-gradient(135deg, #00f2ff, #0060ff)',
+    borderRadius: '24px', margin: '0 auto 30px', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', fontSize: '2rem', fontWeight: '900', color: '#fff',
+    boxShadow: '0 0 40px rgba(0, 242, 255, 0.3)'
   },
   title: { fontSize: '1.7rem', fontWeight: '900', letterSpacing: '4px', color: '#fff', marginBottom: '8px' },
-  subtitle: { fontSize: '0.7rem', color: '#444', marginBottom: '40px', textTransform: 'uppercase', letterSpacing: '1px' },
+  subtitle: { fontSize: '0.75rem', color: '#444', marginBottom: '35px', textTransform: 'uppercase' },
   input: {
-    width: '100%', padding: '18px 22px', marginBottom: '15px', borderRadius: '18px',
+    width: '100%', padding: '16px 22px', marginBottom: '15px', borderRadius: '18px',
     background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#fff', fontSize: '1rem', outline: 'none'
   },
   button: {
-    width: '100%', padding: '20px', marginTop: '10px', borderRadius: '18px', border: 'none',
-    background: '#fff', color: '#000', fontWeight: '900', letterSpacing: '2px', cursor: 'pointer', transition: '0.2s'
+    width: '100%', padding: '18px', marginTop: '10px', borderRadius: '18px', border: 'none',
+    background: '#fff', color: '#000', fontWeight: '900', letterSpacing: '2px', cursor: 'pointer'
   },
   terminalWrapper: {
-    width: '100%', maxWidth: '600px', height: '480px', background: '#000',
-    padding: '35px', borderRadius: '25px', border: '1px solid #111',
-    position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 0 40px rgba(0, 255, 0, 0.1)'
+    width: '100%', maxWidth: '600px', height: '520px', background: '#000',
+    padding: '30px', borderRadius: '25px', border: '1px solid #111',
+    position: 'relative', display: 'flex', flexDirection: 'column'
   },
-  terminalHeader: { display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', marginBottom: '25px', borderBottom: '1px solid #1a1a1a', paddingBottom: '15px', fontWeight: 'bold' },
+  terminalHeader: { display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', marginBottom: '20px', borderBottom: '1px solid #1a1a1a', paddingBottom: '10px' },
   mainLoadingArea: { flexGrow: 1, display: 'flex', flexDirection: 'column' },
-  logWrapper: { height: '240px', overflow: 'hidden', padding: '10px 0' },
-  footerSection: { marginTop: '25px' },
-  progressTrack: { width: '100%', height: '4px', background: '#111', borderRadius: '4px' },
+  logWrapper: { height: '220px', overflowY: 'auto', padding: '10px 0' },
+  footerSection: { marginTop: '20px' },
+  progressTrack: { width: '100%', height: '4px', background: '#111', borderRadius: '2px' },
   progressBar: { height: '100%', background: '#0f0', boxShadow: '0 0 15px #0f0', transition: 'width 0.4s ease' },
   error: { color: '#ff4444', fontSize: '0.75rem', marginBottom: '15px', fontWeight: 'bold' },
   footer: { marginTop: '40px', fontSize: '0.6rem', color: '#222', letterSpacing: '3px' }
