@@ -137,12 +137,14 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="page-transition-wrapper py-4">
-                {currentView === 'home' && <Home />}
-                {currentView === 'books' && <Books onBack={goHome} />}
-                {currentView === 'gardening' && <Gardening onBack={goHome} />}
-              </div>
-            )}
+  <div className="page-transition-wrapper py-4">
+    {currentView === 'home' && <Home />}
+    {/* Pass supabase here! */}
+    {currentView === 'books' && <Books onBack={goHome} supabase={supabase} />}
+    {currentView === 'gardening' && <Gardening onBack={goHome} supabase={supabase} />}
+  </div>
+)}
+            
           </Container>
 
           <div className="taskbar-status">
