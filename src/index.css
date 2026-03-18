@@ -1,16 +1,67 @@
-/* --- 💎 MIDNIGHT STUDIO THEME --- */
+/* --- 🍎 SAFARI COMPATIBILITY LAYER --- */
+
 :root {
-  --accent: #60a5fa; /* Soft Blue */
-  --bg-dark: #020617; /* Deepest Navy */
-  --glass: rgba(255, 255, 255, 0.03);
-  --border: rgba(255, 255, 255, 0.08);
+  --bg-dark: #020617;
+  --neon-blue: #00f2fe;
 }
 
-/* 🔒 LOCKDOWN & SMOOTHING */
 html, body {
-  background-color: var(--bg-dark);
-  color: #f8fafc;
-  letter-spacing: -0.01em;
+  background-color: var(--bg-dark) !important;
+  margin: 0;
+  padding: 0;
+  /* SVH is the secret weapon for Safari Mobile */
+  height: 100vh; 
+  height: 100svh; 
+  width: 100%;
+  overflow: hidden; /* Prevent the double-scroll bounce */
+  -webkit-font-smoothing: antialiased;
+}
+
+#root, .App {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewport-lock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* 🛰️ THE SHELL FIX */
+.intelligence-shell {
+  flex: 1;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch; /* Forces smooth scroll on iPhone */
+  padding-top: 80px;
+  padding-bottom: 120px;
+  background: radial-gradient(circle at top, #1e293b 0%, #020617 100%);
+  /* Safari GPU acceleration */
+  transform: translateZ(0);
+}
+
+/* 📊 HERO GRID SAFARI FIX */
+.hero-metrics-grid {
+  display: -webkit-box; /* Safari Legacy Support */
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap; /* Fallback for grid */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.home-wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  opacity: 1 !important;
 }
 
 /* 🚀 MODERN NAV (Minimalist Bar) */
