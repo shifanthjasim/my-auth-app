@@ -25,8 +25,6 @@ function App() {
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [liveTime, setLiveTime] = useState(new Date());
   const [navExpanded, setNavExpanded] = useState(false);
-  
-  // ⚡ STATE-FLUSH: Ensures a clean transition from Login to Dashboard
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
@@ -44,7 +42,6 @@ function App() {
     localStorage.setItem('isLoggedIn', 'true');
     setCurrentView('home');
 
-    // 🚀 THE SAFARI BUFFER: 250ms delay lets the GPU clear the heavy Login terminal
     setTimeout(() => {
       setIsLoggedIn(true);
       setSessionKey(prev => prev + 1);
@@ -70,20 +67,69 @@ function App() {
   return (
     <div className="App" key={sessionKey} style={{ background: '#000' }}>
       <style>{`
-        /* 🚀 THE SAFARI FIX: Force GPU and correct Viewport Height */
+        /* 🔒 VIEWPORT LOCKDOWN */
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden !important; /* Prevents the whole screen from scrolling */
+          height: 100%;
+        }
+
+        .viewport-container {
+          height: 100vh;
+          height: 100svh;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          position: relative;
+        }
+
+        /* 🔒 FIXED NAVIGATION */
+        .custom-nav { 
+          background: #c0c0c0 !important; 
+          border-bottom: 2px solid #808080;
+          position: fixed !important;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 10000;
+          height: 60px;
+        }
+
+        /* 🔒 THE SCROLLING MIDDLE AREA */
         .intelligence-shell {
+          flex: 1;
           background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
           background-attachment: fixed;
-          min-height: 100vh;
-          min-height: 100svh; /* 🎯 Small Viewport Height for Safari Mobile */
-          padding-top: 80px;
-          padding-bottom: 60px; /* Space for fixed taskbar */
+          padding-top: 70px; /* Space for fixed nav */
+          padding-bottom: 40px; /* Space for fixed footer */
+          overflow-y: auto !important; /* CONTENT SCROLLS HERE */
+          -webkit-overflow-scrolling: touch;
           color: #fff;
           -webkit-transform: translateZ(0);
           transform: translateZ(0);
-          -webkit-backface-visibility: hidden;
         }
         
+        /* 🔒 FIXED TASKBAR */
+        .taskbar-status {
+          position: fixed !important; 
+          bottom: 0; 
+          left: 0;
+          width: 100%; 
+          height: 30px;
+          background: #c0c0c0; 
+          border-top: 2px solid #dfdfdf;
+          display: flex; 
+          align-items: center; 
+          padding: 0 15px;
+          font-size: 0.7rem; 
+          font-weight: bold; 
+          z-index: 10000;
+          color: #333;
+          padding-bottom: env(safe-area-inset-bottom);
+          box-sizing: content-box;
+        }
+
         .win-content-area {
           background-color: #000 !important;
           color: #fff !important;
@@ -106,27 +152,10 @@ function App() {
           text-transform: uppercase;
         }
 
-        /* 📱 MOBILE TASKBAR: Stays at the absolute bottom of Safari */
-        .taskbar-status {
-          position: fixed; 
-          bottom: 0; 
-          left: 0;
-          width: 100%; 
-          height: 30px;
-          background: #c0c0c0; 
-          border-top: 2px solid #dfdfdf;
-          display: flex; 
-          align-items: center; 
-          padding: 0 15px;
-          font-size: 0.7rem; 
-          font-weight: bold; 
-          z-index: 9999;
-          color: #333;
-          padding-bottom: env(safe-area-inset-bottom); /* 🎯 Handles iPhone Home Bar */
-          box-sizing: content-box;
-        }
+        .brand-sj { color: #000080 !important; cursor: pointer; letter-spacing: 1px; }
+        .nav-link { color: #000 !important; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .active-link { background: #dfdfdf; border: 1px inset #808080; color: #000080 !important; }
 
-        /* 📱 MOBILE TABS: Horizontal scroll for smaller screens */
         @media (max-width: 768px) {
           .custom-tabs {
             display: flex !important;
@@ -137,33 +166,27 @@ function App() {
             gap: 5px;
           }
           .custom-tabs .nav-item { flex: 0 0 auto; }
+          .custom-tabs .nav-link {
+            color: #000 !important; font-weight: bold; font-size: 0.7rem;
+            background: #c0c0c0; border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
+          }
+          .custom-tabs .nav-link.active {
+            color: #00f2ff !important; background: #000 !important; border-bottom: none !important;
+          }
         }
-
-        .custom-tabs .nav-link {
-          color: #000 !important; font-weight: bold; font-size: 0.7rem;
-          background: #c0c0c0; border: 2px solid;
-          border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
-        }
-        .custom-tabs .nav-link.active {
-          color: #00f2ff !important; background: #000 !important; border-bottom: none !important;
-        }
-
-        .custom-nav { background: #c0c0c0 !important; border-bottom: 2px solid #808080; }
-        .brand-sj { color: #000080 !important; cursor: pointer; letter-spacing: 1px; }
-        .nav-link { color: #000 !important; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-        .active-link { background: #dfdfdf; border: 1px inset #808080; color: #000080 !important; }
       `}</style>
 
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
-        <div className="intelligence-shell">
+        <div className="viewport-container">
+          {/* NAVIGATION - FIXED OUTSIDE THE SHELL */}
           <Navbar 
             expand="lg" 
             expanded={navExpanded} 
             onToggle={(next) => setNavExpanded(next)} 
-            className="custom-nav py-2 px-4" 
-            fixed="top"
+            className="custom-nav py-2 px-4"
           >
             <Container fluid>
               <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
@@ -190,29 +213,33 @@ function App() {
             </Container>
           </Navbar>
 
-          <Container className="main-content pb-5">
-            {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
-              <div className="win-border shadow-lg">
-                <div className="win-header">
-                  <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
-                  <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
+          {/* SCROLLING MIDDLE AREA */}
+          <main className="intelligence-shell">
+            <Container className="main-content pb-5">
+              {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
+                <div className="win-border shadow-lg">
+                  <div className="win-header">
+                    <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
+                    <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
+                  </div>
+                  <div className="win-content-area p-3">
+                    {currentView === 'coding' && <Coding key="coding" onBack={goHome} supabase={supabase} />}
+                    {currentView === 'notes' && <Notes key="notes" onBack={goHome} supabase={supabase} />}
+                    {currentView === 'important' && <Important key="imp" onBack={goHome} supabase={supabase} />}
+                    {currentView === 'diary' && <Diary key="diary" onBack={goHome} supabase={supabase} />}
+                    {currentView === 'books' && <Books key="books" onBack={goHome} supabase={supabase} />}
+                    {currentView === 'gardening' && <Gardening key="gardening" onBack={goHome} supabase={supabase} />}
+                  </div>
                 </div>
-                <div className="win-content-area p-3">
-                  {currentView === 'coding' && <Coding key="coding" onBack={goHome} supabase={supabase} />}
-                  {currentView === 'notes' && <Notes key="notes" onBack={goHome} supabase={supabase} />}
-                  {currentView === 'important' && <Important key="imp" onBack={goHome} supabase={supabase} />}
-                  {currentView === 'diary' && <Diary key="diary" onBack={goHome} supabase={supabase} />}
-                  {currentView === 'books' && <Books key="books" onBack={goHome} supabase={supabase} />}
-                  {currentView === 'gardening' && <Gardening key="gardening" onBack={goHome} supabase={supabase} />}
+              ) : (
+                <div className="page-transition-wrapper py-4">
+                  {currentView === 'home' && <Home />}
                 </div>
-              </div>
-            ) : (
-              <div className="page-transition-wrapper py-4">
-                {currentView === 'home' && <Home />}
-              </div>
-            )}
-          </Container>
+              )}
+            </Container>
+          </main>
 
+          {/* FOOTER - FIXED OUTSIDE THE SHELL */}
           <div className="taskbar-status">
             <span className="me-2 me-md-3 text-uppercase">NODE: KANDY_LKA</span>
             <span className="text-primary me-2 me-md-3 text-uppercase d-none d-sm-inline">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'OFFLINE'}</span>
