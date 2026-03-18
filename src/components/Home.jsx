@@ -25,25 +25,23 @@ const Home = () => {
       {/* 1. HERO SECTION */}
       <div className="hero-minimal">
         <Container>
-          <h1 className="display-3 fw-bold welcome-container">
+          <div className="welcome-container">
             <span className="welcome-static">Welcome,</span>
-            <span className="name-wrapper">
+            <div className="name-wrapper">
               {name.split("").map((char, index) => (
                 <span 
                   key={index} 
                   className="animated-letter" 
                   style={{ 
-                    /* Staggered delay for the flip + shimmer starting at 0s */
                     animationDelay: `${index * 0.08}s, 0s` 
                   }}
                 >
                   {char === " " ? "\u00A0" : char}
                 </span>
               ))}
-            </span>
-          </h1>
+            </div>
+          </div>
           
-          {/* Enhanced Status Bar */}
           <div className="hero-status-container">
             <p className="hero-status">
               <span className="status-item">📍 Kandy, LK</span>
@@ -59,7 +57,6 @@ const Home = () => {
       {/* 2. WISDOM STREAM (UPWARD CRAWL) */}
       <div className="wisdom-stream-container">
         <div className="stream-inner">
-          {/* Double the array to create a seamless loop */}
           {[...quotes, ...quotes].map((q, i) => (
             <div key={i} className="quote-box">
               <p className="q-text">"{q.text}"</p>
