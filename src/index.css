@@ -235,46 +235,34 @@ html, body {
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .blink-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: blink 1.5s infinite; }
 
-/* --- 🚀 MODERN NAVIGATION FIXED --- */
+/* --- 🚀 NAV & TASKBAR MODERNIZATION --- */
 .custom-nav {
   position: fixed !important;
   top: 0; left: 0; right: 0;
   z-index: 10000 !important;
-  height: 65px;
-  background: rgba(2, 6, 23, 0.8) !important; /* Matches Midnight Theme */
+  background: rgba(2, 6, 23, 0.9) !important; /* Deep dark blue */
   backdrop-filter: blur(15px);
-  border-bottom: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  min-height: 60px;
 }
 
-.brand-sj {
-  font-weight: 800;
-  letter-spacing: 1px;
+/* Fix the Logoff Button visibility */
+.custom-nav .btn-outline-dark {
+  border-color: rgba(255, 255, 255, 0.3) !important;
   color: #fff !important;
-  text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
 }
 
-.nav-link {
-  font-size: 0.75rem !important;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+.custom-nav .btn-outline-dark:hover {
+  background: var(--neon-blue) !important;
+  color: #000 !important;
+}
+
+.taskbar-status {
+  position: fixed !important;
+  bottom: 0; left: 0; right: 0;
+  height: 35px;
+  background: rgba(2, 6, 23, 0.95) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #94a3b8 !important;
-  padding: 0 15px !important;
-  transition: 0.3s ease;
-}
-
-.nav-link:hover, .active-link {
-  color: var(--neon-blue) !important;
-}
-
-/* Mobile Toggle Fix */
-.navbar-toggler { border: none !important; padding: 0; }
-.navbar-toggler-icon { filter: invert(1); } /* Makes it white */
-
-@media (max-width: 991px) {
-  .navbar-collapse {
-    background: var(--bg-dark);
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-  }
+  z-index: 10000;
 }
