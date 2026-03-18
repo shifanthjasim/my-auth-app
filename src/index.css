@@ -1,10 +1,10 @@
-/* --- 🛰️ 1. GLOBAL RESET & VARIABLES --- */
+/* --- 🛰️ 1. GLOBAL ANCHORS & THEME VARIABLES --- */
 :root {
   --bg-dark: #020617;
   --neon-blue: #00f2fe;
   --accent-blue: #4facfe;
   --border-color: rgba(255, 255, 255, 0.1);
-  --glass: rgba(255, 255, 255, 0.05);
+  --glass: rgba(255, 255, 255, 0.03);
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
@@ -23,10 +23,9 @@ html, body {
   height: 100%; width: 100%;
   background-color: var(--bg-dark);
   display: flex; flex-direction: column;
-  isolation: isolate;
 }
 
-/* --- 🧊 2. MAIN LAYOUT SHELL --- */
+/* --- 🧊 2. SHELL LAYOUT (CHROME & SAFARI FIX) --- */
 .viewport-lock {
   flex: 1; display: flex; flex-direction: column;
   height: 100%; position: relative; overflow: hidden;
@@ -38,10 +37,9 @@ html, body {
   padding-top: 85px; padding-bottom: 60px;
   background: radial-gradient(circle at top center, #1e293b 0%, #020617 100%);
   position: relative; z-index: 1;
-  transform: translateZ(0); /* Fixes Safari/Chrome "Flicker" */
 }
 
-/* --- 🚀 3. MODERN NAVIGATION (FIXED LOGOFF) --- */
+/* --- 🚀 3. MODERN NAVIGATION --- */
 .custom-nav {
   background: rgba(2, 6, 23, 0.9) !important;
   backdrop-filter: blur(20px);
@@ -57,18 +55,13 @@ html, body {
   color: #94a3b8 !important; transition: 0.3s ease;
 }
 
-.nav-link:hover, .active-link {
-  color: var(--neon-blue) !important;
-  text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-}
+.nav-link:hover, .active-link { color: var(--neon-blue) !important; }
 
-/* 🎯 LOGOFF BUTTON FIX */
+/* LOGOFF BUTTON VISIBILITY */
 .btn-outline-dark {
   border-color: rgba(255, 255, 255, 0.4) !important;
   color: #ffffff !important;
   background: transparent !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px;
 }
 
 .btn-outline-dark:hover {
@@ -77,9 +70,9 @@ html, body {
   color: #000 !important;
 }
 
-/* --- 🛸 4. HERO & CONTENT HUD --- */
+/* --- 🛸 4. HERO SECTION --- */
 .modern-hero { padding: 40px 0; }
-.hero-title { font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; color: #fff !important; }
+.hero-title { font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; color: #fff !important; margin-bottom: 2rem; }
 .text-accent { color: var(--neon-blue) !important; text-shadow: 0 0 30px rgba(0, 242, 254, 0.3); }
 
 .status-badge {
@@ -94,10 +87,10 @@ html, body {
   padding-top: 2rem; margin-top: 2rem;
 }
 
-.metric-box label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-blue) !important; }
+.metric-box label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-blue) !important; letter-spacing: 2px; }
 .metric-box .value { font-size: 1.1rem; font-weight: 600; color: #fff !important; }
 
-/* --- 📦 5. IMPORTANT HUB & TABLES (THE FIX) --- */
+/* --- 📦 5. IMPORTANT HUB & HUD CARDS --- */
 .win-border {
   background: rgba(255, 255, 255, 0.02) !important;
   border: 1px solid var(--border-color) !important;
@@ -111,33 +104,58 @@ html, body {
   padding: 10px 20px; font-size: 0.7rem;
 }
 
-/* 🎯 THIS FIXES THE WHITE CARDS IN YOUR SNAPSHOT */
 .hud-card, .card {
   background: var(--glass) !important;
   border: 1px solid var(--border-color) !important;
-  color: #fff !important;
-  padding: 20px; border-radius: 8px;
+  color: #fff !important; padding: 20px; border-radius: 8px;
 }
 
-.terminal-text { color: var(--neon-blue) !important; font-family: var(--font-mono); }
-
-.hud-table th { color: var(--accent-blue) !important; border-bottom: 1px solid var(--border-color) !important; }
-.hud-table td { color: #fff !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-
-/* --- 🌊 6. WISDOM STREAM & SIGNATURE --- */
-.wisdom-stream-container {
-  height: 35vh; margin-top: 40px; overflow: hidden;
-  mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+/* --- 🖋️ 6. SIGNATURE FOOTER (THE RESTORED SECTION) --- */
+.footer-signature {
+  padding: 80px 0 40px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 25px;
 }
 
-.stream-inner { animation: scrollUp 80s linear infinite; display: flex; flex-direction: column; align-items: center; }
-.quote-box { background: var(--glass) !important; border: 1px solid var(--border-color); padding: 25px; border-radius: 15px; margin-bottom: 25px; color: #fff !important; }
+.footer-line {
+  width: 90%; max-width: 800px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
 
-.footer-signature { padding: 60px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.sig-left, .sig-right { display: flex; flex-direction: column; }
-.sig-label { font-size: 0.65rem; color: var(--accent-blue) !important; font-family: var(--font-mono); }
-.sig-name { font-size: 1.4rem; font-weight: 900; background: linear-gradient(90deg, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent !important; }
-.sig-divider { width: 1px; height: 40px; background: var(--border-color); }
+.signature-content {
+  display: flex; align-items: center; gap: 30px;
+}
+
+.sig-left, .sig-right {
+  display: flex; flex-direction: column;
+  text-align: left;
+}
+
+.sig-label {
+  font-size: 0.65rem; color: var(--accent-blue) !important;
+  letter-spacing: 3px; font-family: var(--font-mono);
+  margin-bottom: 4px;
+}
+
+.sig-name {
+  font-size: 1.4rem; font-weight: 900; letter-spacing: 2px;
+  background: linear-gradient(90deg, #fff, var(--neon-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
+}
+
+.sig-divider { width: 1px; height: 45px; background: var(--border-color); }
+
+.sig-title { font-size: 0.8rem; font-weight: 700; color: #fff !important; margin-bottom: 2px; }
+.sig-location { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4) !important; }
+
+.system-uptime {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3) !important;
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+}
+
+.blink-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: blink 1.5s infinite; }
 
 /* --- 🎬 7. TASKBAR & ANIMATIONS --- */
 .taskbar-status {
@@ -148,10 +166,10 @@ html, body {
   color: #94a3b8 !important; font-size: 0.7rem; z-index: 10000;
 }
 
-@keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 @media (max-width: 768px) {
-  .hero-metrics-grid { grid-template-columns: 1fr; }
-  .sig-divider { width: 50px; height: 1px; }
-  .signature-content { flex-direction: column; text-align: center; }
+  .signature-content { flex-direction: column; text-align: center; gap: 20px; }
+  .sig-left, .sig-right { text-align: center; }
+  .sig-divider { width: 60px; height: 1px; }
 }
