@@ -25,6 +25,9 @@ function App() {
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [isWorkMode, setIsWorkMode] = useState(false);
   const [liveTime, setLiveTime] = useState(new Date());
+  
+  // 📱 NEW: State to control mobile menu
+  const [navExpanded, setNavExpanded] = useState(false);
 
   const checkWorkTime = () => {
     const hour = new Date().getHours();
@@ -55,12 +58,14 @@ function App() {
     setCurrentView('home'); 
   };
 
-  const goHome = () => setCurrentView('home');
+  const goHome = () => {
+    setCurrentView('home');
+    setNavExpanded(false); // Close menu when going home
+  };
 
   return (
     <div className="App">
       <style>{`
-        /* 🎨 THE IMPROVED BACKGROUND */
         .intelligence-shell {
           background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
           background-attachment: fixed;
@@ -70,10 +75,9 @@ function App() {
           color: #fff;
         }
         
-        /* 🛠️ THE INVISIBLE TEXT FIX */
         .win-content-area {
-          background-color: #000 !important; /* Force black background inside windows */
-          color: #fff !important;           /* Force white text */
+          background-color: #000 !important;
+          color: #fff !important;
           min-height: 60vh;
           border: 1px solid #30363d;
         }
@@ -91,6 +95,23 @@ function App() {
           color: white; font-weight: bold; padding: 4px 8px; font-size: 0.75rem;
           display: flex; justify-content: space-between;
           text-transform: uppercase;
+        }
+
+        /* 🕵️‍♂️ TAB VISIBILITY PATCH - Fixes the white-on-white text */
+        .custom-tabs .nav-link {
+          color: #000000 !important;
+          font-weight: bold;
+          font-size: 0.7rem;
+          background: #c0c0c0;
+          border: 2px solid;
+          border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
+          margin-right: 2px;
+        }
+
+        .custom-tabs .nav-link.active {
+          color: #00f2ff !important;
+          background: #000000 !important;
+          border-bottom: none !important;
         }
 
         .custom-nav {
@@ -116,7 +137,14 @@ function App() {
         <Login onLoginSuccess={handleLogin} />
       ) : (
         <div className="intelligence-shell">
-          <Navbar expand="lg" className="custom-nav py-2 px-4" fixed="top">
+          {/* 📱 Added 'expanded' and 'onToggle' for iPhone auto-close */}
+          <Navbar 
+            expand="lg" 
+            expanded={navExpanded} 
+            onToggle={(next) => setNavExpanded(next)} 
+            className="custom-nav py-2 px-4" 
+            fixed="top"
+          >
             <Container fluid>
               <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
                 <i className="bi bi-shield-shaded me-2"></i>AXON_NODE
@@ -128,13 +156,16 @@ function App() {
                     <div 
                       key={id}
                       className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`} 
-                      onClick={() => setCurrentView(id)}
+                      onClick={() => {
+                        setCurrentView(id);
+                        setNavExpanded(false); // 🛰️ CLoses menu after selection
+                      }}
                     >
                       {id.toUpperCase()}
                     </div>
                   ))}
                 </Nav>
-                <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
+                <Button variant="outline-dark" size="sm" onClick={() => { handleLogout(); setNavExpanded(false); }}>LOGOFF</Button>
               </Navbar.Collapse>
             </Container>
           </Navbar>
@@ -146,7 +177,6 @@ function App() {
                   <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
                   <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
                 </div>
-                {/* Applied the 'win-content-area' class here to fix visibility */}
                 <div className="win-content-area p-3">
                   {currentView === 'coding' && <Coding key="coding" onBack={goHome} supabase={supabase} />}
                   {currentView === 'notes' && <Notes key="notes" onBack={goHome} supabase={supabase} />}
