@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { createClient } from '@supabase/supabase-js'; // 🛰️ New
+import { createClient } from '@supabase/supabase-js'; 
+import Login from './components/Login';
+import Home from './components/Home';
+import Books from './components/Books';
+import Gardening from './components/Gardening';
+import Coding from './components/Coding';
+import Notes from './components/Notes';
+import Diary from './components/Diary'; 
+import Important from './components/Important';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+import React, { useState, useEffect } from 'react';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { createClient } from '@supabase/supabase-js'; 
 import Login from './components/Login';
 import Home from './components/Home';
 import Books from './components/Books';
@@ -13,7 +27,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // --- SECURE_UPLINK_CONFIG ---
-// Use your Supabase keys from previous projects here
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -24,11 +37,17 @@ function App() {
   const [isWorkMode, setIsWorkMode] = useState(false);
   const [liveTime, setLiveTime] = useState(new Date());
 
-  // Logic to check Work Shift (5 PM - 2 AM Kandy Time)
+  // 🛰️ Session Re-validation for Safari/iPhone Sync
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      console.log("NODE_STATUS: ONLINE");
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
   const checkWorkTime = () => {
     const hour = new Date().getHours();
-    const working = hour >= 17 || hour < 2;
-    setIsWorkMode(working);
+    setIsWorkMode(hour >= 17 || hour < 2);
   };
 
   useEffect(() => {
@@ -50,6 +69,7 @@ function App() {
   };
 
   const handleLogout = () => {
+    // 🧹 Clean up local storage but keep the cloud connection
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentView');
     setIsLoggedIn(false);
@@ -61,7 +81,7 @@ function App() {
   return (
     <div className="App">
       <style>{`
-        /* 🕵️ CIA Win98 Style Overrides */
+        /* 🕵️ CIA Win98 Style Restored */
         .intelligence-shell {
           background-color: ${isWorkMode ? '#008080' : '#f0f0f0'};
           min-height: 100vh;
@@ -85,8 +105,8 @@ function App() {
           border-bottom: 2px solid #808080;
           box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .brand-sj { color: #000080 !important; font-family: 'Tahoma', sans-serif; }
-        .nav-link { color: #000 !important; font-size: 0.9rem; }
+        .brand-sj { color: #000080 !important; font-family: 'Tahoma', sans-serif; cursor: pointer; }
+        .nav-link { color: #000 !important; font-size: 0.9rem; cursor: pointer; }
         .active-link { background: #dfdfdf; border: 1px inset #808080; }
         .taskbar-status {
           position: fixed; bottom: 0; width: 100%; height: 30px;
@@ -103,7 +123,7 @@ function App() {
           
           <Navbar variant="light" expand="lg" className="custom-nav py-2 px-4" fixed="top">
             <Container fluid>
-              <Navbar.Brand className="fw-bold brand-sj" onClick={goHome} style={{ cursor: 'pointer' }}>
+              <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
                 <i className="bi bi-shield-shaded me-2"></i>AXON_NODE
               </Navbar.Brand>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -121,7 +141,6 @@ function App() {
                     <div 
                       key={item.id}
                       className={`nav-link px-3 ${currentView === item.id ? 'active-link' : ''}`} 
-                      style={{ cursor: 'pointer' }} 
                       onClick={() => setCurrentView(item.id)}
                     >
                       {item.label.toUpperCase()}
@@ -136,26 +155,27 @@ function App() {
           </Navbar>
 
           <Container className="main-content pb-5">
-            {/* Wrap high-priority pages in the "Win98 Window" */}
-            {['coding', 'important', 'notes'].includes(currentView) ? (
+            {/* 🖥️ WIN98 WRAPPER FOR SYSTEM TOOLS */}
+            {['coding', 'important', 'notes', 'diary'].includes(currentView) ? (
               <div className="win-border shadow-lg">
                 <div className="win-header">
                   <span>C:\LANGLEY\REPORTS\{currentView.toUpperCase()}.EXE</span>
-                  <span>X</span>
+                  <span style={{cursor: 'pointer'}} onClick={goHome}>X</span>
                 </div>
                 <div className="bg-white p-3" style={{ minHeight: '60vh' }}>
+                  {/* CRITICAL: Passing 'supabase' prop so Cloud Sync works */}
                   {currentView === 'coding' && <Coding onBack={goHome} supabase={supabase} />}
                   {currentView === 'notes' && <Notes onBack={goHome} supabase={supabase} />}
                   {currentView === 'important' && <Important onBack={goHome} supabase={supabase} />}
+                  {currentView === 'diary' && <Diary onBack={goHome} supabase={supabase} />}
                 </div>
               </div>
             ) : (
-              /* Standard view for lifestyle pages */
+              /* LIFESTYLE VIEWS */
               <div className="page-transition-wrapper py-4" key={currentView}>
                 {currentView === 'home' && <Home />}
                 {currentView === 'books' && <Books onBack={goHome} />}
                 {currentView === 'gardening' && <Gardening onBack={goHome} />}
-                {currentView === 'diary' && <Diary onBack={goHome} />}
               </div>
             )}
           </Container>
