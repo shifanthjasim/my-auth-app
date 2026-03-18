@@ -140,25 +140,94 @@ html, body {
   color: #fff !important;
 }
 
-/* --- 🖋️ 6. SIGNATURE & TASKBAR --- */
+/* --- 🖋️ 6. SIGNATURE FOOTER (RESTORED LAYOUT) --- */
 .footer-signature {
-  padding: 60px 0 40px;
-  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  padding: 80px 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.footer-line {
+  width: 90%;
+  max-width: 800px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+.signature-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* 🎯 This creates the vertical stacking for your name and title */
+.sig-left, .sig-right {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.sig-label {
+  font-size: 0.65rem;
+  color: var(--accent-blue) !important;
+  letter-spacing: 3px;
+  font-family: var(--font-mono);
+  margin-bottom: 4px;
 }
 
 .sig-name {
-  font-size: 1.4rem; font-weight: 900;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 2px;
   background: linear-gradient(90deg, #fff, var(--neon-blue));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
 }
 
-.taskbar-status {
-  position: fixed !important; bottom: 0; left: 0; right: 0;
-  height: 35px; background: rgba(2, 6, 23, 0.9) !important;
-  backdrop-filter: blur(10px); border-top: 1px solid var(--border-color);
-  display: flex; align-items: center; padding: 0 20px;
-  z-index: 10000; color: #94a3b8 !important; font-size: 0.7rem;
-  padding-bottom: env(safe-area-inset-bottom);
+.sig-divider {
+  width: 1px;
+  height: 45px;
+  background: var(--border-color);
+}
+
+.sig-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff !important;
+  margin-bottom: 2px;
+}
+
+.sig-location {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.system-uptime {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .signature-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  .sig-left, .sig-right {
+    text-align: center;
+  }
+  .sig-divider {
+    width: 60px;
+    height: 1px;
+  }
 }
 
 /* --- 🎬 7. ANIMATIONS --- */
