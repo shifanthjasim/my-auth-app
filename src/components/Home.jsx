@@ -23,19 +23,34 @@ const Home = () => {
   return (
     <div className="home-wrapper">
       {/* 1. HERO SECTION - PRISM DESIGN */}
-      <div className="hero-minimal">
-        <Container>
-          <div className="welcome-container">
-            <span className="welcome-static">Welcome,</span>
-            <h1 className="name-wrapper">
-              {name.split("").map((char, index) => (
-                <span 
-                  key={index} 
-                  className="animated-letter" 
-                  style={{ 
-                    /* Primary flip delay + Shimmer sync */
-                    animationDelay: `${index * 0.08}s, 0s` 
-                  }}
+      /* --- 🛸 NEW HERO COMPONENT --- */
+<div className="modern-hero">
+  <Container>
+    <div className="status-badge mb-3">
+      <span className="blink-dot me-2"></span>
+      <span className="status-text">UPLINK_STABLE // KANDY_NODE</span>
+    </div>
+    
+    <h1 className="hero-title">
+      Hello, <span className="text-accent">Shifanth</span>
+    </h1>
+    
+    <div className="hero-metrics-grid mt-5">
+      <div className="metric-box">
+        <label>LOCAL_TIME</label>
+        <div className="value">{time.toLocaleTimeString()}</div>
+      </div>
+      <div className="metric-box">
+        <label>POSITION</label>
+        <div className="value">KANDY, SRI LANKA</div>
+      </div>
+      <div className="metric-box">
+        <label>ROLE</label>
+        <div className="value">S.E. // MARYLAND</div>
+      </div>
+    </div>
+  </Container>
+</div>
                 >
                   {char === " " ? "\u00A0" : char}
                 </span>
