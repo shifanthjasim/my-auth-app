@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { createClient } from '@supabase/supabase-js'; 
+
+// Components
 import Login from './components/Login';
 import Home from './components/Home';
 import Books from './components/Books';
@@ -9,21 +11,24 @@ import Coding from './components/Coding';
 import Notes from './components/Notes';
 import Diary from './components/Diary'; 
 import Important from './components/Important';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // --- SUPABASE_CONFIG ---
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+let supabase = null;
+if (SUPABASE_URL && SUPABASE_KEY) {
+  supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true');
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [liveTime, setLiveTime] = useState(new Date());
   const [navExpanded, setNavExpanded] = useState(false);
-  
-  // Stability states
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
@@ -32,113 +37,97 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('currentView', currentView);
-  }, [currentView]);
-
-  // 🛠️ THE HEAVY-DUTY LOGIN HANDLER
   const handleLogin = () => {
-    // Phase 1: Lock the UI
     setIsRedirecting(true);
-    
-    // Phase 2: Set Data
     localStorage.setItem('isLoggedIn', 'true');
-    setCurrentView('home');
+    
+    // Safety: Clear any stuck scroll positions
+    window.scrollTo(0, 0);
 
-    // Phase 3: Delay the mounting of the dashboard to let Chrome/Safari clear memory
     setTimeout(() => {
       setIsLoggedIn(true);
       setSessionKey(prev => prev + 1);
-      
-      // Phase 4: Final release of the redirect curtain
       setTimeout(() => {
         setIsRedirecting(false);
-        // Ensure browser is at the top of the shell
-        const shell = document.querySelector('.intelligence-shell');
-        if (shell) shell.scrollTop = 0;
-      }, 100);
-    }, 400); // 400ms is the "Sweet Spot" for browser stability
+      }, 150);
+    }, 600); // Increased to 600ms for heavy processing
   };
 
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    setCurrentView('home'); 
+    setIsRedirecting(false);
+    setSessionKey(prev => prev + 1);
   };
 
-  const goHome = () => { 
-    setCurrentView('home'); 
-    setNavExpanded(false); 
+  const renderView = () => {
+    // Protect against missing Supabase
+    const props = { onBack: () => setCurrentView('home'), supabase };
+
+    switch (currentView) {
+      case 'coding': return <Coding {...props} />;
+      case 'notes': return <Notes {...props} />;
+      case 'important': return <Important {...props} />;
+      case 'diary': return <Diary {...props} />;
+      case 'books': return <Books {...props} />;
+      case 'gardening': return <Gardening {...props} />;
+      default: return <Home />;
+    }
   };
 
   return (
-    <div className="App" key={sessionKey} style={{ background: '#000', minHeight: '100vh' }}>
+    <div className="App" key={sessionKey} style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff' }}>
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
-        <div className="viewport-lock">
-          {/* 1. FIXED TOP NAVBAR */}
+        <div className="viewport-lock" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+          
           <Navbar expand="lg" expanded={navExpanded} className="custom-nav px-4">
             <Container fluid>
-              <Navbar.Brand className="fw-bold brand-sj" onClick={goHome}>
-                <i className="bi bi-shield-shaded me-2"></i>AXON_NODE
+              <Navbar.Brand className="fw-bold brand-sj" onClick={() => setCurrentView('home')}>
+                AXON_NODE
               </Navbar.Brand>
-              <Navbar.Toggle onClick={() => setNavExpanded(!navExpanded)} aria-controls="basic-navbar-nav" />
-              <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mx-auto fw-medium">
+              <Navbar.Toggle onClick={() => setNavExpanded(!navExpanded)} />
+              <Navbar.Collapse>
+                <Nav className="mx-auto">
                   {['home', 'books', 'gardening', 'coding', 'notes', 'diary', 'important'].map((id) => (
                     <Nav.Link 
                       key={id}
-                      className={`px-3 ${currentView === id ? 'active-link' : ''}`} 
-                      onClick={() => {
-                        setCurrentView(id);
-                        setNavExpanded(false); 
-                      }}
+                      className={currentView === id ? 'active-link' : ''} 
+                      onClick={() => { setCurrentView(id); setNavExpanded(false); }}
                     >
                       {id.toUpperCase()}
                     </Nav.Link>
                   ))}
                 </Nav>
-                <div className="mt-2 mt-lg-0 text-center">
-                  <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
-                </div>
+                <Button variant="outline-dark" size="sm" onClick={handleLogout}>LOGOFF</Button>
               </Navbar.Collapse>
             </Container>
           </Navbar>
 
-          {/* 2. THE SCROLLING CONTENT BOX */}
-          <main className="intelligence-shell">
-            <Container className="main-content">
+          <main className="intelligence-shell" style={{ flex: 1, overflowY: 'auto' }}>
+            <Container className="py-4">
               {['coding', 'important', 'notes', 'diary', 'books', 'gardening'].includes(currentView) ? (
-                <div className="win-border shadow-lg">
+                <div className="win-border">
                   <div className="win-header">
-                    <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
-                    <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
+                    <span>SYSTEM_ACTIVE // {currentView.toUpperCase()}</span>
+                    <span onClick={() => setCurrentView('home')} style={{cursor:'pointer'}}>X</span>
                   </div>
                   <div className="win-content-area p-3">
-                    {currentView === 'coding' && <Coding onBack={goHome} supabase={supabase} />}
-                    {currentView === 'notes' && <Notes onBack={goHome} supabase={supabase} />}
-                    {currentView === 'important' && <Important onBack={goHome} supabase={supabase} />}
-                    {currentView === 'diary' && <Diary onBack={goHome} supabase={supabase} />}
-                    {currentView === 'books' && <Books onBack={goHome} supabase={supabase} />}
-                    {currentView === 'gardening' && <Gardening onBack={goHome} supabase={supabase} />}
+                    {renderView()}
                   </div>
                 </div>
               ) : (
                 <div className="page-transition-wrapper">
-                  {currentView === 'home' && <Home />}
+                  <Home />
                 </div>
               )}
             </Container>
           </main>
 
-          {/* 3. FIXED BOTTOM TASKBAR */}
           <div className="taskbar-status">
-            <span className="me-2 text-uppercase">NODE: KANDY_LKA</span>
-            <span className="text-primary d-none d-md-inline ms-2">UPLINK: MARYLAND_ENCRYPTED</span>
-            <span className="ms-auto time-display">
-              {liveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            <span>NODE: KANDY_LKA</span>
+            <span className="ms-auto">{liveTime.toLocaleTimeString()}</span>
           </div>
         </div>
       )}
