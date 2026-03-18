@@ -21,10 +21,10 @@ const Home = () => {
 
   return (
     <div className="home-wrapper">
-      {/* 🛸 1. MODERN HERO SECTION */}
+      {/* 1. MODERN HERO SECTION */}
       <div className="modern-hero">
         <Container>
-          <div className="status-badge mb-3">
+          <div className="status-badge">
             <span className="blink-dot me-2"></span>
             <span className="status-text">UPLINK_STABLE // KANDY_NODE</span>
           </div>
@@ -33,7 +33,8 @@ const Home = () => {
             Hello, <span className="text-accent">Shifanth</span>
           </h1>
           
-          <div className="hero-metrics-grid mt-5">
+          {/* THE METRICS GRID - This is the part that was stacking wrong */}
+          <div className="hero-metrics-grid">
             <div className="metric-box">
               <label>LOCAL_TIME</label>
               <div className="value font-monospace">
@@ -52,7 +53,7 @@ const Home = () => {
         </Container>
       </div>
 
-      {/* 🌊 2. WISDOM STREAM (UPWARD CRAWL) */}
+      {/* 2. WISDOM STREAM (UPWARD CRAWL) */}
       <div className="wisdom-stream-container">
         <div className="stream-inner">
           {[...quotes, ...quotes].map((q, i) => (
@@ -64,7 +65,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 🖋️ 3. SIGNATURE FOOTER */}
+      {/* 3. SIGNATURE FOOTER */}
       <footer className="footer-signature">
         <div className="footer-line"></div>
         <div className="signature-content">
@@ -79,7 +80,7 @@ const Home = () => {
           </div>
         </div>
         <div className="system-uptime">
-          <span className="blink-dot"></span> SYSTEM_STABLE_v5.0.0_MODERN
+          <span className="blink-dot"></span> SYSTEM_STABLE_v5.2.0_MODERN
         </div>
       </footer>
     </div>
