@@ -12,50 +12,43 @@
   --font-mono: 'Courier New', monospace;
 }
 
-/* --- 2. GLOBAL RESET & SAFARI STABILITY --- */
+/* --- 2. GLOBAL RESET & SAFARI SCROLL FIX --- */
 html, body {
-  background-color: #000;
-  overflow-x: hidden;
-  height: -webkit-fill-available; /* Safari specific */
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  background-color: #000;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   background-color: var(--bg-deep);
   color: #ffffff !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 h1, h2, h3, h4, h5, p, span {
   color: #ffffff !important;
 }
 
-/* --- 3. THE MASTER SHELL (FIXED FOR SAFARI & FOOTER) --- */
+/* --- 3. THE MASTER SHELL (FIXED POSITIONING) --- */
 .intelligence-shell {
   background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
   background-attachment: fixed;
   min-height: 100vh;
-  min-height: 100svh; /* 🎯 Safari Viewport Fix */
-  padding-top: 80px;
-  padding-bottom: 60px; /* Space for the taskbar */
+  min-height: 100svh; /* Safari Fix */
+  padding-top: 100px; /* Space for Fixed Nav */
+  padding-bottom: 60px; /* Space for Fixed Taskbar */
   color: #ffffff;
   position: relative;
   
-  /* 🚀 GPU Hardware Acceleration for Safari Blank Screen Fix */
+  /* 🚀 GPU Force for Safari Blank Screen Fix */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
 }
 
-/* 🛰️ CRT Scanline Effect */
+/* Scanline CRT Effect */
 .intelligence-shell::before {
   content: " ";
   display: block;
@@ -68,13 +61,13 @@ h1, h2, h3, h4, h5, p, span {
   pointer-events: none;
 }
 
-/* --- 4. NAVIGATION --- */
+/* --- 4. NAVIGATION (FIXED TO TOP) --- */
 .custom-nav {
-  position: fixed;
+  position: fixed !important;
   top: 0; left: 0; right: 0;
   width: 100%;
-  z-index: 2000;
-  background: rgba(0, 0, 0, 0.85) !important;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9) !important;
   backdrop-filter: var(--blur);
   border-bottom: 1px solid var(--border-color);
 }
@@ -86,10 +79,16 @@ h1, h2, h3, h4, h5, p, span {
   -webkit-text-fill-color: transparent !important;
 }
 
-/* --- 5. TASKBAR (FIXED TO BOTTOM FOR SAFARI) --- */
+.active-link {
+  background: #dfdfdf !important;
+  color: #000080 !important;
+  border: 1px inset #808080;
+}
+
+/* --- 5. TASKBAR (FIXED TO BOTTOM) --- */
 .taskbar-status {
-  position: fixed; 
-  bottom: 0; 
+  position: fixed !important; 
+  bottom: 0 !important; 
   left: 0;
   width: 100%; 
   height: 30px;
@@ -102,38 +101,80 @@ h1, h2, h3, h4, h5, p, span {
   font-weight: bold; 
   z-index: 9999;
   color: #333 !important;
-  
-  /* 🎯 iPhone Safe Area Fix (Handles Swipe Bar) */
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: content-box;
 }
 
 .taskbar-status span { color: #333 !important; }
 
-/* --- 6. WINDOWS 98 ELEMENTS --- */
+/* --- 6. HOME PAGE (PRISM WHITE HERO) --- */
+.hero-minimal {
+  padding-top: 40px;
+  text-align: center;
+  z-index: 10;
+}
+
+.welcome-static {
+  font-weight: 200;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  letter-spacing: -2px;
+  opacity: 0.9;
+}
+
+.animated-letter {
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  background: linear-gradient(90deg, #fff 0%, #fff 45%, var(--neon-blue) 50%, #fff 55%, #fff 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  animation: cleanReveal 1s ease forwards, prismShimmer 5s linear infinite;
+}
+
+@keyframes cleanReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes prismShimmer { 0% { background-position: -100% center; } 100% { background-position: 150% center; } }
+
+/* --- 7. WISDOM STREAM (HOME SCROLL) --- */
+.wisdom-stream-container {
+  height: 40vh;
+  margin-top: 20px;
+  overflow: hidden;
+  mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+}
+
+.stream-inner { animation: scrollUp 60s linear infinite; }
+@keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+
+.quote-box {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+}
+
+/* --- 8. WINDOWS 98 COMPONENTS --- */
 .win-border { 
   background: #c0c0c0; border: 2px solid;
   border-color: #dfdfdf #000 #000 #dfdfdf;
   box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
   padding: 2px;
-  margin-top: 20px;
 }
 
 .win-header {
   background: linear-gradient(90deg, #000080, #1084d0);
   color: white; font-weight: bold; padding: 4px 8px; font-size: 0.75rem;
   display: flex; justify-content: space-between;
-  text-transform: uppercase;
 }
 
 .win-content-area {
   background-color: #000 !important;
-  color: #fff !important;
-  min-height: 60vh;
-  border: 1px solid #30363d;
+  min-height: 50vh;
 }
 
-/* --- 7. MOBILE TAB SCROLLING --- */
+/* --- 9. MOBILE TABS & SCROLL --- */
 @media (max-width: 768px) {
   .custom-tabs {
     display: flex !important;
@@ -141,79 +182,29 @@ h1, h2, h3, h4, h5, p, span {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
-    gap: 5px;
   }
-  .custom-tabs .nav-item { flex: 0 0 auto; }
+  .custom-tabs .nav-link {
+    color: #000 !important; font-weight: bold; font-size: 0.7rem;
+    background: #c0c0c0; border: 2px solid;
+    border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
+  }
+  .custom-tabs .nav-link.active {
+    color: #00f2ff !important; background: #000 !important;
+  }
 }
 
-.custom-tabs .nav-link {
-  color: #000 !important; font-weight: bold; font-size: 0.7rem;
-  background: #c0c0c0; border: 2px solid;
-  border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
-  border-radius: 0;
-}
-
-.custom-tabs .nav-link.active {
-  color: #00f2ff !important; background: #000 !important; border-bottom: none !important;
-}
-
-/* --- 8. HERO & WISDOM STREAM (PRESERVED) --- */
-.welcome-static { color: #ffffff !important; font-weight: 200; font-size: 3.5rem; letter-spacing: -2px; opacity: 0.9; }
-
-.animated-letter {
-  display: inline-block; font-weight: 800; font-size: 3.5rem;
-  background: linear-gradient(90deg, #fff 0%, #fff 45%, var(--neon-blue) 50%, #fff 55%, #fff 100%);
-  background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
-  opacity: 0; transform: translateY(10px) rotateX(-20deg);
-  animation: cleanReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, prismShimmer 5s linear infinite;
-}
-
-@keyframes cleanReveal { to { opacity: 1; transform: translateY(0) rotateX(0); } }
-@keyframes prismShimmer { 0% { background-position: -100% center; } 100% { background-position: 150% center; } }
-
-.wisdom-stream-container {
-  height: 55vh; margin-top: 40px; position: relative; z-index: 5; overflow: hidden;
-  mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
-  -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
-}
-
-.stream-inner { display: flex; flex-direction: column; align-items: center; animation: scrollUp 80s linear infinite; }
-@keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-
-/* --- 9. DIARY & GARDEN (PRESERVED) --- */
-.garden-card { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 12px !important; transition: 0.3s; }
-.garden-card:hover { border-color: #22c55e !important; transform: translateX(5px); }
-
-.diary-timeline { position: relative; padding-left: 30px; border-left: 2px solid var(--border-color); margin-left: 15px; }
-.diary-dot { position: absolute; left: -37px; width: 12px; height: 12px; background: var(--neon-blue); border-radius: 50%; box-shadow: 0 0 10px var(--neon-blue); }
-
-/* --- 10. PAGE TRANSITIONS --- */
+/* --- 10. PAGE TRANSITION --- */
 .page-transition-wrapper {
-  animation: silkyReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0; filter: blur(10px); 
-  transform: translateY(20px) scale(0.99);
-  will-change: transform, opacity, filter;
+  animation: silkyReveal 0.6s ease-out forwards;
 }
 
 @keyframes silkyReveal {
-  to { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- 11. WORK/REST MODES --- */
-.shared-viewport-root::before {
-  content: ''; position: absolute; inset: 0; z-index: -1;
-  background-image: radial-gradient(at 0% 0%, rgba(79, 172, 254, 0.2) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
-  animation: bgPulse 10s ease-in-out infinite alternate;
-}
-@keyframes bgPulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
-
-/* --- 12. RESPONSIVE HEADER FIX (5:42 PM Screenshot Fix) --- */
+/* 📱 ADD_NEW BUTTON OVERFLOW FIX */
 .books-wrapper .d-flex.justify-content-between {
   flex-wrap: wrap !important;
-  gap: 12px;
-}
-
-@media (max-width: 576px) {
-  .welcome-static, .animated-letter { font-size: 2.2rem; }
-  .win-header span { font-size: 0.6rem; }
+  gap: 10px;
 }
