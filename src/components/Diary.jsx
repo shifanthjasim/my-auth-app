@@ -1,39 +1,67 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient'; // Ensure this path is correct
 import { Container, Row, Col, Card, Button, Form, Modal, Badge } from 'react-bootstrap';
 
 const Diary = ({ onBack }) => {
-  const [entries, setEntries] = useState(() => JSON.parse(localStorage.getItem('sj_diary')) || []);
+  const [entries, setEntries] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '', mood: '😊 Happy' });
 
-  useEffect(() => {
-    localStorage.setItem('sj_diary', JSON.stringify(entries));
-  }, [entries]);
+  // --- 1. FETCH FROM SUPABASE ---
+  const fetchEntries = async () => {
+    const { data, error } = await supabase
+      .from('missions') // Using your missions table
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    const now = new Date();
-    const newEntry = { 
-      ...formData, 
-      id: Date.now(), 
-      date: now.toLocaleDateString(),
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setEntries([newEntry, ...entries]);
-    setShowModal(false);
-    setFormData({ title: '', content: '', mood: '😊 Happy' });
+    if (error) console.error("Sync Error:", error.message);
+    else setEntries(data);
   };
 
-  const deleteEntry = (id) => {
+  useEffect(() => {
+    fetchEntries();
+  }, []);
+
+  // --- 2. SAVE TO SUPABASE ---
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('missions')
+      .insert([{ 
+        mission_name: formData.title, // Maps to your mission_name column
+        text: formData.content,       // Ensure you have a 'text' column in SQL
+        category: formData.mood 
+      }]);
+
+    if (error) {
+      alert("Handshake Failed: " + error.message);
+    } else {
+      setShowModal(false);
+      setFormData({ title: '', content: '', mood: '😊 Happy' });
+      fetchEntries(); // Refresh the list for both devices
+    }
+    setLoading(false);
+  };
+
+  // --- 3. DELETE FROM SUPABASE ---
+  const deleteEntry = async (id) => {
     if (window.confirm("Delete this memory?")) {
-      setEntries(entries.filter(e => e.id !== id));
+      const { error } = await supabase
+        .from('missions')
+        .delete()
+        .eq('id', id);
+
+      if (error) console.error("Erase Error:", error.message);
+      else fetchEntries();
     }
   };
 
   return (
     <div className="page-view-wrapper" style={{ paddingTop: '100px' }}>
       <Container className="py-5 text-white">
-        {/* HEADER */}
         <div className="d-flex justify-content-between align-items-center mb-5">
           <div className="d-flex align-items-center">
             <Button variant="outline-info" className="me-4 rounded-circle back-btn" onClick={onBack}>←</Button>
@@ -44,23 +72,22 @@ const Diary = ({ onBack }) => {
           </Button>
         </div>
 
-        {/* TIMELINE VIEW */}
         <div className="diary-timeline">
-          {entries.length === 0 && <p className="text-muted text-center py-5">The pages are empty. Start writing...</p>}
-          {entries.map((entry, index) => (
+          {entries.length === 0 && <p className="text-muted text-center py-5">Connecting to Maryland... if empty, start writing!</p>}
+          {entries.map((entry) => (
             <div key={entry.id} className="diary-item mb-5">
               <div className="diary-meta">
                 <div className="diary-dot"></div>
-                <span className="diary-date">{entry.date}</span>
-                <span className="diary-time">{entry.time}</span>
+                <span className="diary-date">{new Date(entry.created_at).toLocaleDateString()}</span>
+                <span className="diary-time">{new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-              <Card className="garden-card diary-card border-0 shadow-lg">
+              <Card className="garden-card diary-card border-0 shadow-lg bg-dark text-white">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h3 className="text-info h4 mb-0">{entry.title}</h3>
-                    <Badge bg="dark" className="border border-info text-info">{entry.mood}</Badge>
+                    <h3 className="text-info h4 mb-0">{entry.mission_name}</h3>
+                    <Badge bg="dark" className="border border-info text-info">{entry.category}</Badge>
                   </div>
-                  <p className="diary-content">{entry.content}</p>
+                  <p className="diary-content">{entry.text}</p>
                   <div className="text-end">
                     <Button variant="link" className="text-danger p-0 small" onClick={() => deleteEntry(entry.id)}>
                       Erase Memory
@@ -105,7 +132,9 @@ const Diary = ({ onBack }) => {
               </Form.Group>
             </Modal.Body>
             <Modal.Footer className="border-secondary">
-              <Button variant="info" type="submit" className="w-100">Save Entry</Button>
+              <Button variant="info" type="submit" className="w-100" disabled={loading}>
+                {loading ? 'Uplinking...' : 'Save Entry to Cloud'}
+              </Button>
             </Modal.Footer>
           </Form>
         </Modal>
