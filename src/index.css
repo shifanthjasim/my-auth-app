@@ -207,3 +207,112 @@ html, body {
   border-color: var(--neon-blue) !important;
   box-shadow: 0 0 10px rgba(0, 242, 254, 0.2) !important;
 }
+
+/* --- 💎 MODERN HERO STYLING --- */
+.hero-minimal {
+  padding: 100px 0 60px;
+  text-align: center;
+  background: transparent;
+}
+
+.welcome-static {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--neon-blue) !important;
+  opacity: 0.8;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.name-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  perspective: 1000px;
+}
+
+.animated-letter {
+  display: inline-block;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  color: #fff;
+  /* Prism Shimmer Effect */
+  background: linear-gradient(
+    90deg, 
+    #ffffff 0%, 
+    #ffffff 45%, 
+    var(--neon-blue) 50%, 
+    #ffffff 55%, 
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Entrance Animation */
+  opacity: 0;
+  transform: rotateX(-90deg) translateY(20px);
+  animation: 
+    letterEntry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+    prismShimmer 4s linear infinite;
+}
+
+/* --- 🧊 GLASS STATUS BAR --- */
+.hero-status-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-status-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 30px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.status-item {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.status-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- 🎬 KEYFRAMES --- */
+@keyframes letterEntry {
+  to {
+    opacity: 1;
+    transform: rotateX(0deg) translateY(0);
+  }
+}
+
+@keyframes prismShimmer {
+  to { background-position: 200% center; }
+}
+
+@media (max-width: 768px) {
+  .hero-status-glass {
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 20px;
+    gap: 10px;
+  }
+  .status-divider {
+    width: 50px;
+    height: 1px;
+  }
+}

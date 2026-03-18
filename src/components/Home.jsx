@@ -22,36 +22,44 @@ const Home = () => {
 
   return (
     <div className="home-wrapper">
-      {/* 1. HERO SECTION */}
+      {/* 1. HERO SECTION - PRISM DESIGN */}
       <div className="hero-minimal">
         <Container>
-          <h1 className="display-3 fw-bold welcome-container">
+          <div className="welcome-container">
             <span className="welcome-static">Welcome,</span>
-            <span className="name-wrapper">
+            <h1 className="name-wrapper">
               {name.split("").map((char, index) => (
                 <span 
                   key={index} 
                   className="animated-letter" 
                   style={{ 
-                    /* Staggered delay for the flip + shimmer starting at 0s */
+                    /* Primary flip delay + Shimmer sync */
                     animationDelay: `${index * 0.08}s, 0s` 
                   }}
                 >
                   {char === " " ? "\u00A0" : char}
                 </span>
               ))}
-            </span>
-          </h1>
+            </h1>
+          </div>
           
-          {/* Enhanced Status Bar */}
+          {/* 🧊 GLASS-MORPHISM STATUS BAR */}
           <div className="hero-status-container">
-            <p className="hero-status">
-              <span className="status-item">📍 Kandy, LK</span>
-              <span className="status-divider">|</span>
-              <span className="status-item text-info">🕒 {time.toLocaleTimeString()}</span>
-              <span className="status-divider">|</span>
-              <span className="status-item">📅 {time.toLocaleDateString()}</span>
-            </p>
+            <div className="hero-status-glass">
+              <span className="status-item">
+                <i className="bi bi-geo-alt-fill me-2 text-info"></i>Kandy, LK
+              </span>
+              <span className="status-divider"></span>
+              <span className="status-item font-monospace">
+                <i className="bi bi-clock-history me-2 text-info"></i>
+                {time.toLocaleTimeString([], { hour12: false })}
+              </span>
+              <span className="status-divider"></span>
+              <span className="status-item">
+                <i className="bi bi-calendar3 me-2 text-info"></i>
+                {time.toLocaleDateString('en-GB')}
+              </span>
+            </div>
           </div>
         </Container>
       </div>
@@ -59,7 +67,6 @@ const Home = () => {
       {/* 2. WISDOM STREAM (UPWARD CRAWL) */}
       <div className="wisdom-stream-container">
         <div className="stream-inner">
-          {/* Double the array to create a seamless loop */}
           {[...quotes, ...quotes].map((q, i) => (
             <div key={i} className="quote-box">
               <p className="q-text">"{q.text}"</p>
@@ -84,7 +91,7 @@ const Home = () => {
           </div>
         </div>
         <div className="system-uptime">
-          <span className="blink-dot"></span> SYSTEM_STABLE_v3.2.0
+          <span className="blink-dot"></span> SYSTEM_STABLE_v4.6.0_PRO
         </div>
       </footer>
     </div>
