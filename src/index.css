@@ -556,3 +556,27 @@ h1, h2, h3, h4, h5, p, span {
   background-size: 100% 4px, 3px 100%;
   pointer-events: none;
 }
+
+/* 🕵️‍♂️ TAB VISIBILITY PATCH */
+.custom-tabs .nav-link {
+  color: #000000 !important; /* Force text to be black so it shows on the gray tab */
+  font-weight: bold;
+  font-size: 0.75rem;
+  border-radius: 0;
+  margin-right: 2px;
+  background: #c0c0c0; /* Classic Gray */
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf !important;
+}
+
+.custom-tabs .nav-link.active {
+  color: #00f2ff !important; /* Cyber Cyan for the active tab */
+  background: #000000 !important; /* Black background for active tab */
+  border-bottom: none !important;
+  box-shadow: 0px -2px 10px rgba(0, 242, 255, 0.2);
+}
+
+.custom-tabs .nav-item:hover .nav-link {
+  background: #dfdfdf;
+  color: #000;
+}
