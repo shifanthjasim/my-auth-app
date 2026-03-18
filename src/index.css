@@ -527,3 +527,32 @@ h1, h2, h3, h4, h5, p, span {
     radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
   animation-duration: 15s; /* Very slow, calming pulse */
 }
+
+.intelligence-shell {
+  /* Deep Slate/Midnight Gradient */
+  background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding-top: 80px;
+  color: #ffffff; /* Global white text force */
+}
+
+/* Force the "Important" and "Notes" containers to be dark */
+.win-border .bg-white {
+  background-color: #0d1117 !important; /* Overrides the white background */
+  color: #ffffff !important;           /* Overrides dark text */
+  border: 1px solid #30363d;
+}
+
+/* 🛰️ Add this "Scanline" effect for that CRT monitor feel */
+.intelligence-shell::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  z-index: 2;
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+}
