@@ -1,4 +1,4 @@
-/* --- 🛰️ 1. GLOBAL ANCHORS --- */
+/* --- 🛰️ 1. GLOBAL SETTINGS --- */
 :root {
   --bg-dark: #020617;
   --neon-blue: #00f2fe;
@@ -16,7 +16,7 @@ html, body, #root, .App {
   display: flex; flex-direction: column;
 }
 
-/* --- 🧊 2. LAYOUT SHELL --- */
+/* --- 🧊 2. MAIN LAYOUT --- */
 .viewport-lock {
   flex: 1; display: flex; flex-direction: column;
   height: 100%; position: relative; overflow: hidden;
@@ -28,7 +28,7 @@ html, body, #root, .App {
   background: radial-gradient(circle at top, #1e293b 0%, #020617 100%) !important;
 }
 
-/* --- 🚀 3. NAVBAR & TASKBAR (FORCE DARK) --- */
+/* --- 🚀 3. NAVIGATION & UI --- */
 .custom-nav {
   background: rgba(2, 6, 23, 0.95) !important;
   backdrop-filter: blur(20px);
@@ -39,7 +39,6 @@ html, body, #root, .App {
 .nav-link { color: #94a3b8 !important; font-weight: 600 !important; }
 .active-link { color: var(--neon-blue) !important; }
 
-/* LOGOFF BUTTON */
 .btn-outline-dark {
   border: 1px solid rgba(255,255,255,0.4) !important;
   color: #fff !important;
@@ -54,106 +53,120 @@ html, body, #root, .App {
   display: flex; align-items: center; padding: 0 20px;
 }
 
-/* --- 🌊 4. WISDOM STREAM (QUOTES) RESTORED --- */
+/* --- 🛸 4. MODERN HERO & METRICS (RESTORED) --- */
+.modern-hero {
+  padding: 60px 0 20px !important;
+  text-align: left !important;
+}
+
+.status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: rgba(0, 242, 254, 0.05) !important;
+  padding: 6px 16px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(0, 242, 254, 0.2) !important;
+  margin-bottom: 2rem !important;
+}
+
+.status-text {
+  font-family: monospace !important;
+  font-size: 0.7rem !important;
+  color: var(--neon-blue) !important;
+  letter-spacing: 2px !important;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 10vw, 5.5rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: -3px !important;
+  margin-bottom: 3rem !important;
+  color: #fff !important;
+}
+
+.text-accent {
+  color: var(--neon-blue) !important;
+  text-shadow: 0 0 30px rgba(0, 242, 254, 0.3) !important;
+}
+
+.hero-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 2.5rem !important;
+  border-top: 1px solid var(--border-color) !important;
+  padding-top: 2.5rem !important;
+  max-width: 900px;
+}
+
+.metric-box { display: flex !important; flex-direction: column !important; gap: 8px !important; }
+
+.metric-box label {
+  font-family: monospace !important;
+  font-size: 0.7rem !important;
+  color: var(--accent-blue) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  margin: 0 !important;
+}
+
+.metric-box .value {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+/* --- 🌊 5. WISDOM STREAM (QUOTES) --- */
 .wisdom-stream-container {
-  height: 45vh; 
-  margin-top: 50px; 
-  overflow: hidden; 
-  position: relative;
-  /* Creates the smooth fade at top/bottom */
+  height: 40vh; margin-top: 60px; overflow: hidden; position: relative;
   mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
   -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
 }
 
-.stream-inner { 
-  animation: scrollUp 80s linear infinite; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-}
+.stream-inner { animation: scrollUp 80s linear infinite; display: flex; flex-direction: column; align-items: center; }
 
-@keyframes scrollUp { 
-  0% { transform: translateY(0); } 
-  100% { transform: translateY(-50%); } 
-}
+@keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
 
 .quote-box {
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid var(--border-color) !important;
-  padding: 35px; 
-  width: 90%; 
-  max-width: 600px;
-  border-radius: 20px; 
-  margin-bottom: 40px;
-  backdrop-filter: blur(12px); 
-  text-align: center;
-  transition: transform 0.3s ease;
+  padding: 35px; width: 90%; max-width: 600px;
+  border-radius: 20px; margin-bottom: 40px; backdrop-filter: blur(12px); text-align: center;
 }
 
-.q-text {
-  font-size: 1.1rem;
-  font-weight: 500;
-  line-height: 1.6;
-  color: #ffffff !important;
-  margin-bottom: 15px;
-}
+.q-text { font-size: 1.1rem; color: #fff !important; }
+.q-author { font-size: 0.8rem; font-family: monospace; color: var(--neon-blue) !important; }
 
-.q-author {
-  font-size: 0.8rem;
-  font-family: monospace;
-  color: var(--neon-blue) !important;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-/* --- 🖋️ 5. SIGNATURE FOOTER --- */
+/* --- 🖋️ 6. SIGNATURE FOOTER --- */
 .footer-signature {
   padding: 100px 0 60px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 30px !important;
-  width: 100%;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; gap: 30px !important;
 }
 
-.signature-content {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 40px !important;
-}
+.signature-content { display: flex !important; align-items: center !important; gap: 40px !important; }
 
 .sig-left, .sig-right { display: flex !important; flex-direction: column !important; text-align: left !important; }
 
 .sig-label { font-size: 0.65rem !important; color: var(--accent-blue) !important; letter-spacing: 3px !important; }
 
 .sig-name {
-  font-size: 1.6rem !important;
-  font-weight: 900 !important;
+  font-size: 1.6rem !important; font-weight: 900 !important;
   background: linear-gradient(90deg, #fff, var(--neon-blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent !important;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
 }
 
 .sig-divider { width: 1px !important; height: 50px !important; background: var(--border-color) !important; }
 
 .sig-title { font-size: 0.9rem !important; font-weight: 700 !important; color: #fff !important; }
-.sig-location { font-size: 0.7rem !important; color: rgba(255, 255, 255, 0.5) !important; }
 
 .system-uptime { font-size: 0.7rem !important; color: rgba(255, 255, 255, 0.3) !important; margin-top: 20px; display: flex; align-items: center; gap: 8px; }
 
 .blink-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: blink 1.5s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* --- 📦 6. HUB CARDS (PREVENT WHITE-OUT) --- */
-.win-border, .hud-card, .card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid var(--border-color) !important;
-  color: #fff !important;
-}
-
 /* --- 📱 MOBILE --- */
 @media (max-width: 768px) {
+  .hero-metrics-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
   .signature-content { flex-direction: column !important; text-align: center !important; }
   .sig-left, .sig-right { text-align: center !important; }
   .sig-divider { width: 80px !important; height: 1px !important; }
