@@ -1,24 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// Added { onLoginSuccess } as a prop
 const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isShaking, setIsShaking] = useState(false);
+  
+  // ⚡ LOADING STATES
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState([]);
+
+  // Random "Hacker/System" codes to show during loading
+  const terminalCodes = [
+    "> CONNECTING TO MARYLAND_HUB...",
+    "> BYPASSING KANDY_NODE_FIREWALL...",
+    "> AUTHENTICATING AXON_ENCRYPTION...",
+    "> DECRYPTING USER_DATA_STREAM...",
+    "> STABILIZING SATELLITE_UPLINK...",
+    "> ACCESSING LANGLEY_REPORTS.EXE...",
+    "> INITIALIZING WIN98_INTERFACE...",
+    "> LOGIN_SUCCESS: SHIFANTH_JASIM",
+    "> WELCOME_OPERATIVE..."
+  ];
 
   const handleLogin = (e) => {
     e.preventDefault();
     
     if (username !== 'User') {
-      triggerError('The username you entered is incorrect.');
+      triggerError('Invalid Identity.');
     } else if (password !== 'user') {
-      triggerError('The password you entered is incorrect.');
+      triggerError('Access Denied.');
     } else {
       setError('');
-      // INSTEAD of just an alert, we call the function from App.jsx
-      onLoginSuccess(); 
+      startInitialization();
     }
+  };
+
+  const startInitialization = () => {
+    setIsInitializing(true);
+    let logIndex = 0;
+    
+    // Show a new log every 300ms
+    const interval = setInterval(() => {
+      if (logIndex < terminalCodes.length) {
+        setLoadingLogs(prev => [...prev, terminalCodes[logIndex]]);
+        logIndex++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => {
+          onLoginSuccess(); // Finally enter the app
+        }, 500);
+      }
+    }, 350);
   };
 
   const triggerError = (msg) => {
@@ -33,8 +66,9 @@ const Login = ({ onLoginSuccess }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      background: isInitializing ? '#000' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+      fontFamily: '"Courier New", Courier, monospace',
+      transition: 'background 0.5s ease'
     },
     card: {
       padding: '40px',
@@ -44,113 +78,65 @@ const Login = ({ onLoginSuccess }) => {
       textAlign: 'center',
       background: 'rgba(255, 255, 255, 0.25)', 
       backdropFilter: 'blur(20px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       border: '1px solid rgba(255, 255, 255, 0.3)',
       boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-      transition: 'transform 0.1s ease-out' 
+      display: isInitializing ? 'none' : 'block'
     },
-    logoContainer: {
-      marginBottom: '20px',
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative'
-    },
-    logoBg: {
-      width: '70px',
-      height: '70px',
-      borderRadius: '50%',
-      background: 'linear-gradient(135deg, #2af5ef 0%, #4facfe 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 4px 15px rgba(79, 172, 254, 0.5)'
-    },
-    logoText: {
-      fontSize: '2.2rem',
-      fontWeight: '700',
-      color: 'white',
-      letterSpacing: '-2px',
-      position: 'relative',
-      top: '-1px'
+    terminal: {
+      width: '100%',
+      maxWidth: '500px',
+      height: '300px',
+      padding: '20px',
+      background: '#000',
+      color: '#0f0',
+      textAlign: 'left',
+      fontSize: '0.85rem',
+      borderRadius: '10px',
+      border: '1px solid #333',
+      boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
+      overflowY: 'auto',
+      display: isInitializing ? 'block' : 'none'
     },
     input: {
-      width: '100%',
-      padding: '12px 15px',
-      margin: '8px 0',
-      borderRadius: '10px',
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-      background: 'rgba(255, 255, 255, 0.5)',
-      fontSize: '1rem',
-      outline: 'none',
-      boxSizing: 'border-box'
+      width: '100%', padding: '12px 15px', margin: '8px 0',
+      borderRadius: '10px', border: '1px solid rgba(0, 0, 0, 0.1)',
+      background: 'rgba(255, 255, 255, 0.5)', fontSize: '1rem', outline: 'none'
     },
     button: {
-      width: '100%',
-      padding: '12px',
-      marginTop: '15px',
-      borderRadius: '10px',
-      border: 'none',
+      width: '100%', padding: '12px', marginTop: '15px',
+      borderRadius: '10px', border: 'none', color: 'white',
       background: 'linear-gradient(135deg, #2af5ef 0%, #4facfe 100%)',
-      color: 'white',
-      fontWeight: '600',
-      cursor: 'pointer',
-      fontSize: '1rem',
-      boxShadow: '0 4px 10px rgba(79, 172, 254, 0.3)'
-    },
-    errorText: {
-      color: '#ff3b30',
-      fontSize: '0.85rem',
-      marginTop: '10px',
-      fontWeight: '500'
-    },
-    creator: {
-      marginTop: '30px',
-      fontSize: '0.8rem',
-      color: '#555'
+      fontWeight: '600', cursor: 'pointer'
     }
   };
 
   return (
     <div style={styles.container}>
-      <div 
-        style={styles.card} 
-        className={isShaking ? 'shake-animation' : ''}
-      >
-        <div style={styles.logoContainer}>
-          <div style={styles.logoBg} className="logo-animate">
-            <span style={styles.logoText}>SJ</span>
+      {/* 🟢 THE SYSTEM LOADING SCREEN */}
+      <div style={styles.terminal}>
+        <div style={{color: '#fff', marginBottom: '10px', borderBottom: '1px solid #333'}}>SYSTEM_INITIALIZATION_SEQUENCE...</div>
+        {loadingLogs.map((log, i) => (
+          <div key={i} style={{marginBottom: '5px'}}>{log}</div>
+        ))}
+        <div className="blinking-cursor">_</div>
+      </div>
+
+      {/* ⚪ THE LOGIN CARD */}
+      <div style={styles.card} className={isShaking ? 'shake-animation' : ''}>
+        <div style={{marginBottom: '20px'}}>
+          <div style={{width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(135deg, #2af5ef 0%, #4facfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto'}}>
+            <span style={{fontSize: '2.2rem', fontWeight: '700', color: 'white'}}>SJ</span>
           </div>
         </div>
         
-        <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: '#111', marginBottom: '25px' }}>
-          Shifanth Jasim
-        </h2>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: '#111', marginBottom: '25px' }}>Shifanth Jasim</h2>
 
         <form onSubmit={handleLogin}>
-          <input 
-            type="text" 
-            style={styles.input}
-            placeholder="Username" 
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input 
-            type="password" 
-            style={styles.input}
-            placeholder="Password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          
-          {error && <div style={styles.errorText}>{error}</div>}
-          
+          <input type="text" style={styles.input} placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input type="password" style={styles.input} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          {error && <div style={{color: '#ff3b30', fontSize: '0.85rem', marginTop: '10px'}}>{error}</div>}
           <button type="submit" style={styles.button}>Sign In</button>
         </form>
-
-        <div style={styles.creator}>
-          Designed by **Shifanth Jasim**
-        </div>
       </div>
     </div>
   );
