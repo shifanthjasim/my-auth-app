@@ -1,25 +1,20 @@
 /* ============================================================
-   AXON_NODE CORE CSS - FINAL STABLE v4.5
+   AXON_NODE CORE CSS - STABLE v5.0 (Signature Restored)
    ============================================================ */
 
 /* --- 1. CORE VARIABLES --- */
 :root {
   --neon-blue: #00f2fe;
-  --neon-purple: #a855f7;
   --accent-blue: #4facfe;
-  --bg-dark: #050505;
   --bg-deep: #0a0a0b;
-  --bg-slate: #0f172a;
   --border-color: rgba(255, 255, 255, 0.15);
-  --glass-bg: rgba(255, 255, 255, 0.07);
   --blur: blur(12px);
-  --font-mono: 'Inter', 'Courier New', monospace;
 }
 
-/* --- 2. VIEWPORT LOCKDOWN (SAFARI FIX) --- */
+/* --- 2. VIEWPORT LOCKDOWN --- */
 html, body {
   margin: 0; padding: 0;
-  overflow: hidden !important; /* Forces internal scroll only */
+  overflow: hidden !important;
   height: 100% !important;
   position: fixed !important;
   width: 100% !important;
@@ -29,144 +24,121 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+.viewport-lock {
+  height: 100vh; height: 100svh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, p, span { color: #ffffff !important; }
-
-/* --- 3. MASTER SCROLLING SHELL --- */
-.intelligence-shell {
-  position: absolute !important;
-  top: 0 !important; left: 0; right: 0; bottom: 0 !important;
-  height: 100% !important;
-  padding-top: 75px !important; 
-  padding-bottom: 60px !important;
-  overflow-y: auto !important;
-  background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
-  background-attachment: fixed;
-  -webkit-overflow-scrolling: touch;
-  -webkit-transform: translateZ(0); /* GPU Acceleration for Safari */
-  z-index: 1;
-}
-
-/* CRT Scanline Effect */
-.intelligence-shell::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-              linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-  z-index: 2;
-  background-size: 100% 4px, 3px 100%;
-  pointer-events: none;
-}
-
-/* --- 4. NAVIGATION (LOCKED + MOBILE FIX) --- */
+/* --- 3. NAVIGATION (WIN98 STYLE) --- */
 .custom-nav {
   position: fixed !important;
-  top: 0 !important; left: 0; right: 0;
-  width: 100% !important;
-  z-index: 9999 !important;
-  min-height: 65px !important;
-  background: #c0c0c0 !important; /* Win98 Theme */
+  top: 0; left: 0; right: 0;
+  z-index: 10000;
+  background: #c0c0c0 !important;
   border-bottom: 2px solid #808080;
+  min-height: 60px;
 }
 
 @media (max-width: 991px) {
   .navbar-collapse {
-    background: #c0c0c0;
-    padding: 15px;
+    background: #c0c0c0; padding: 15px;
     border-top: 1px solid #808080;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-  .nav-link {
-    color: #000 !important;
-    padding: 12px 0 !important;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    display: block !important;
+    max-height: 70vh; overflow-y: auto;
   }
 }
 
-.brand-sj {
-  font-weight: 800;
-  color: #000080 !important;
-  cursor: pointer;
-  letter-spacing: 1px;
+.brand-sj { font-weight: 800; color: #000080 !important; cursor: pointer; }
+.active-link { background: #dfdfdf !important; border: 1px inset #808080; color: #000080 !important; }
+
+/* --- 4. SCROLLING CENTER --- */
+.intelligence-shell {
+  flex: 1;
+  background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
+  padding-top: 80px; padding-bottom: 50px;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  -webkit-transform: translateZ(0);
 }
 
-.active-link {
-  background: #dfdfdf !important;
-  border: 1px inset #808080;
-  color: #000080 !important;
-}
-
-/* --- 5. PRISM WHITE HERO --- */
-.hero-minimal { padding: 60px 0 20px; text-align: center; position: relative; z-index: 10; }
-.welcome-static { font-weight: 200; font-size: 3.5rem; letter-spacing: -2px; opacity: 0.9; }
-
-.animated-letter {
-  display: inline-block; font-weight: 800; font-size: 3.5rem;
-  background: linear-gradient(90deg, #fff 0%, #fff 45%, var(--neon-blue) 50%, #fff 55%, #fff 100%);
-  background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
-  opacity: 0; transform: translateY(10px);
-  animation: cleanReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, prismShimmer 5s linear infinite;
-}
-
-/* --- 6. WISDOM STREAM --- */
+/* --- 5. WISDOM STREAM EFFECTS --- */
 .wisdom-stream-container {
-  height: 45vh; margin-top: 20px; overflow: hidden;
+  height: 45vh; margin-top: 40px; overflow: hidden; position: relative;
   mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
   -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
 }
 
 .stream-inner { animation: scrollUp 80s linear infinite; display: flex; flex-direction: column; align-items: center; }
+@keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
 
 .quote-box {
-  background: var(--glass-bg) !important; border: 1px solid var(--border-color) !important;
-  padding: 30px; width: 90%; max-width: 600px; border-radius: 20px; margin-bottom: 30px;
-  backdrop-filter: blur(5px); transition: 0.4s;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 30px; width: 90%; max-width: 600px;
+  border-radius: 20px; margin-bottom: 30px;
+  backdrop-filter: blur(12px); text-align: center;
 }
 
-.quote-box:hover { transform: scale(1.03); border-color: var(--neon-blue) !important; }
-
-/* --- 7. WINDOWS 98 COMPONENTS --- */
-.win-border { 
-  background: #c0c0c0; border: 2px solid;
-  border-color: #dfdfdf #000 #000 #dfdfdf;
-  box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
-  padding: 2px;
+/* --- 6. 🚀 SIGNATURE FOOTER (FIXED LAYOUT) --- */
+.footer-signature {
+  padding: 80px 0 40px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 25px;
 }
 
-.win-header {
-  background: linear-gradient(90deg, #000080, #1084d0);
-  color: white; font-weight: bold; padding: 4px 8px; font-size: 0.75rem;
-  display: flex; justify-content: space-between; text-transform: uppercase;
+.footer-line {
+  width: 90%; max-width: 800px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
 }
 
-.win-content-area { background-color: #000 !important; color: #fff !important; min-height: 50vh; border: 1px solid #30363d; }
+.signature-content {
+  display: flex; align-items: center; gap: 30px;
+}
 
-/* --- 8. TASKBAR (TIME FIX) --- */
+.sig-left, .sig-right {
+  display: flex;
+  flex-direction: column; /* 🎯 This prevents the text from sticking together */
+}
+
+.sig-label {
+  font-size: 0.65rem; color: var(--accent-blue) !important;
+  letter-spacing: 3px; font-family: monospace;
+}
+
+.sig-name {
+  font-size: 1.4rem; font-weight: 900; letter-spacing: 2px;
+  background: linear-gradient(90deg, #fff, var(--neon-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent !important;
+}
+
+.sig-divider { width: 1px; height: 45px; background: var(--border-color); }
+
+.sig-title { font-size: 0.8rem; font-weight: 700; color: #fff !important; }
+.sig-location { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4) !important; }
+
+.system-uptime {
+  font-family: monospace; font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3) !important;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.blink-dot {
+  width: 6px; height: 6px; background: #22c55e; border-radius: 50%;
+  animation: blink 1.5s infinite; box-shadow: 0 0 8px #22c55e;
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* --- 7. TASKBAR (TIME FIX) --- */
 .taskbar-status {
-  position: fixed !important;
-  bottom: 0 !important; left: 0; right: 0;
-  width: 100% !important; height: 35px !important;
-  z-index: 9999 !important;
-  background: #c0c0c0 !important; border-top: 2px solid #dfdfdf;
-  display: flex !important; align-items: center !important;
-  padding: 0 20px !important; /* Safety padding for curved screens */
-  padding-bottom: env(safe-area-inset-bottom) !important;
-  box-sizing: content-box !important;
-  color: #333 !important; font-weight: bold; font-size: 0.7rem;
+  position: fixed !important; bottom: 0; left: 0; right: 0;
+  height: 35px; background: #c0c0c0 !important; border-top: 2px solid #dfdfdf;
+  display: flex; align-items: center; padding: 0 20px !important;
+  z-index: 10000; color: #333 !important; font-weight: bold; font-size: 0.7rem;
+  padding-bottom: env(safe-area-inset-bottom); box-sizing: content-box;
 }
 
-.time-display { margin-right: 15px; white-space: nowrap; }
-
-/* --- 9. KEYFRAMES --- */
-@keyframes cleanReveal { to { opacity: 1; transform: translateY(0); } }
-@keyframes prismShimmer { 0% { background-position: -100% center; } 100% { background-position: 150% center; } }
-@keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+@media (max-width: 768px) {
+  .signature-content { flex-direction: column; text-align: center; gap: 15px; }
+  .sig-divider { width: 50px; height: 1px; }
+}
