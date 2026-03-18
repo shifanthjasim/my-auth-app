@@ -51,7 +51,7 @@ const Home = () => {
     </div>
   </Container>
 </div>
-                >
+                
                   {char === " " ? "\u00A0" : char}
                 </span>
               ))}

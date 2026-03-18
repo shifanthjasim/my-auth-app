@@ -217,3 +217,24 @@
   background: rgba(255, 255, 255, 0.05) !important;
   color: white !important;
 }
+
+/* --- 📦 THE HUB GRID --- */
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.hub-tile {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hub-tile:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
