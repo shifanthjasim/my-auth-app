@@ -11,29 +11,19 @@ const Books = ({ onBack, supabase }) => {
   const [formData, setFormData] = useState({ title: '', author: '', notes: '' });
 
   // --- 2. THE DOWNLINK (Fetch All Books) ---
-  const fetchBooks = async () => {
-    if (!supabase) return;
-    setLoading(true);
-    
-    console.log("🛰️ Syncing Book Vault with Maryland...");
-    const { data, error } = await supabase
-      .from('missions')
-      .select('*')
-      .eq('category', 'Books') // ⚡ Case-sensitive: Must match the Save function
-      .order('created_at', { ascending: false });
+  const fetchEntries = async () => {
+  if (!supabase) return;
 
-    if (error) {
-      console.error("❌ VAULT_FETCH_ERROR:", error.message);
-    } else {
-      console.log("✅ DATA_RECEIVED:", data);
-      setItems(data || []);
-    }
-    setLoading(false);
-  };
+  const { data, error } = await supabase
+    .from('missions')
+    .select('*')
+    // 🎯 THIS IS THE FILTERING LINE YOU NEED:
+    .or('category.eq.Diary,category.is.null') 
+    .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    fetchBooks();
-  }, [supabase]);
+  if (error) console.error("Error:", error.message);
+  else setEntries(data || []);
+};
 
   // --- 3. THE UPLINK (Insert or Update with Force Confirmation) ---
   const handleSave = async (e) => {
