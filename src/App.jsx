@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'; 
 import Login from './components/Login';
 import Home from './components/Home';
 import Books from './components/Books';
 import Gardening from './components/Gardening';
 import Coding from './components/Coding';
 import Notes from './components/Notes';
-import Diary from './components/Diary';
+import Diary from './components/Diary'; 
 import Important from './components/Important';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -16,8 +16,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
-const supabase = (SUPABASE_URL && SUPABASE_KEY)
-  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+  ? createClient(SUPABASE_URL, SUPABASE_KEY) 
   : null;
 
 function App() {
@@ -25,13 +25,13 @@ function App() {
   const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'home');
   const [liveTime, setLiveTime] = useState(new Date());
   const [navExpanded, setNavExpanded] = useState(false);
-
-  // ⚡ SAFARI FIX: State-Flush variables
+  
+  // ⚡ STATE-FLUSH: Ensures a clean transition from Login to Dashboard
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setLiveTime(new Date()), 1000);
+    const timer = setInterval(() => setLiveTime(new Date()), 1000); 
     return () => clearInterval(timer);
   }, []);
 
@@ -40,19 +40,15 @@ function App() {
   }, [currentView]);
 
   const handleLogin = () => {
-    // 1. Kick off the redirecting state (Hides Login immediately)
     setIsRedirecting(true);
-
-    // 2. Prepare the data in background
     localStorage.setItem('isLoggedIn', 'true');
     setCurrentView('home');
 
-    // 3. 🚀 THE "SAFARI BUFFER": Wait 250ms for the GPU to clear the terminal
+    // 🚀 THE SAFARI BUFFER: 250ms delay lets the GPU clear the heavy Login terminal
     setTimeout(() => {
       setIsLoggedIn(true);
       setSessionKey(prev => prev + 1);
-
-      // 4. Final re-paint trigger
+      
       setTimeout(() => {
         setIsRedirecting(false);
         window.scrollTo(0, 0);
@@ -63,7 +59,7 @@ function App() {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    setCurrentView('home');
+    setCurrentView('home'); 
   };
 
   const goHome = () => {
@@ -74,12 +70,14 @@ function App() {
   return (
     <div className="App" key={sessionKey} style={{ background: '#000' }}>
       <style>{`
-        /* 🚀 SAFARI GPU ACCELERATION */
+        /* 🚀 THE SAFARI FIX: Force GPU and correct Viewport Height */
         .intelligence-shell {
           background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
           background-attachment: fixed;
           min-height: 100vh;
+          min-height: 100svh; /* 🎯 Small Viewport Height for Safari Mobile */
           padding-top: 80px;
+          padding-bottom: 60px; /* Space for fixed taskbar */
           color: #fff;
           -webkit-transform: translateZ(0);
           transform: translateZ(0);
@@ -108,6 +106,27 @@ function App() {
           text-transform: uppercase;
         }
 
+        /* 📱 MOBILE TASKBAR: Stays at the absolute bottom of Safari */
+        .taskbar-status {
+          position: fixed; 
+          bottom: 0; 
+          left: 0;
+          width: 100%; 
+          height: 30px;
+          background: #c0c0c0; 
+          border-top: 2px solid #dfdfdf;
+          display: flex; 
+          align-items: center; 
+          padding: 0 15px;
+          font-size: 0.7rem; 
+          font-weight: bold; 
+          z-index: 9999;
+          color: #333;
+          padding-bottom: env(safe-area-inset-bottom); /* 🎯 Handles iPhone Home Bar */
+          box-sizing: content-box;
+        }
+
+        /* 📱 MOBILE TABS: Horizontal scroll for smaller screens */
         @media (max-width: 768px) {
           .custom-tabs {
             display: flex !important;
@@ -133,36 +152,17 @@ function App() {
         .brand-sj { color: #000080 !important; cursor: pointer; letter-spacing: 1px; }
         .nav-link { color: #000 !important; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .active-link { background: #dfdfdf; border: 1px inset #808080; color: #000080 !important; }
-
-        .taskbar-status {
-          position: fixed; bottom: 0; width: 100%; height: 30px;
-          background: #c0c0c0; border-top: 2px solid #dfdfdf;
-          display: flex; align-items: center; padding: 0 15px;
-          font-size: 0.7rem; font-weight: bold; z-index: 1000; color: #333;
-        }
-          .intelligence-shell {
-  /* ... existing styles ... */
-  -webkit-backface-visibility: hidden; /* 📱 Safari hardware acceleration fix */
-  backface-visibility: hidden;
-  transform: translateZ(0); /* 🚀 Forces Safari to use the GPU */
-  -webkit-transform: translateZ(0);
-}
-
-/* Fix for the white flash on Safari mobile */
-.App {
-  background-color: #000 !important;
-}
       `}</style>
 
       {(!isLoggedIn || isRedirecting) ? (
         <Login onLoginSuccess={handleLogin} />
       ) : (
         <div className="intelligence-shell">
-          <Navbar
-            expand="lg"
-            expanded={navExpanded}
-            onToggle={(next) => setNavExpanded(next)}
-            className="custom-nav py-2 px-4"
+          <Navbar 
+            expand="lg" 
+            expanded={navExpanded} 
+            onToggle={(next) => setNavExpanded(next)} 
+            className="custom-nav py-2 px-4" 
             fixed="top"
           >
             <Container fluid>
@@ -173,12 +173,12 @@ function App() {
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mx-auto fw-medium">
                   {['home', 'books', 'gardening', 'coding', 'notes', 'diary', 'important'].map((id) => (
-                    <div
+                    <div 
                       key={id}
-                      className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`}
+                      className={`nav-link px-3 ${currentView === id ? 'active-link' : ''}`} 
                       onClick={() => {
                         setCurrentView(id);
-                        setNavExpanded(false);
+                        setNavExpanded(false); 
                       }}
                     >
                       {id.toUpperCase()}
@@ -195,7 +195,7 @@ function App() {
               <div className="win-border shadow-lg">
                 <div className="win-header">
                   <span>C:\\LANGLEY\\REPORTS\\{currentView.toUpperCase()}.EXE</span>
-                  <span onClick={goHome} style={{ cursor: 'pointer', padding: '0 5px' }}>X</span>
+                  <span onClick={goHome} style={{cursor:'pointer', padding: '0 5px'}}>X</span>
                 </div>
                 <div className="win-content-area p-3">
                   {currentView === 'coding' && <Coding key="coding" onBack={goHome} supabase={supabase} />}
@@ -214,9 +214,9 @@ function App() {
           </Container>
 
           <div className="taskbar-status">
-            <span className="me-3 text-uppercase">NODE: KANDY_LKA</span>
-            <span className="text-primary me-3 text-uppercase">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'OFFLINE'}</span>
-            <span className="ms-auto">{liveTime.toLocaleTimeString()}</span>
+            <span className="me-2 me-md-3 text-uppercase">NODE: KANDY_LKA</span>
+            <span className="text-primary me-2 me-md-3 text-uppercase d-none d-sm-inline">UPLINK: {supabase ? 'MARYLAND_ENCRYPTED' : 'OFFLINE'}</span>
+            <span className="ms-auto">{liveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
         </div>
       )}
