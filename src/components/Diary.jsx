@@ -7,7 +7,6 @@ const Diary = ({ onBack, supabase }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '', mood: '😊 Happy' });
 
-  // --- 🛰️ THE DOWNLINK (Fixed function name) ---
   const fetchDiaryEntries = async () => {
     if (!supabase) return;
     setLoading(true);
@@ -15,7 +14,6 @@ const Diary = ({ onBack, supabase }) => {
     const { data, error } = await supabase
       .from('missions')
       .select('*')
-      // 🎯 We keep 'Diary' and NULL entries, but we also need to allow the 'Moods'
       .or('category.eq.Diary,category.is.null,category.ilike.%😊%,category.ilike.%🚀%,category.ilike.%🤔%,category.ilike.%😴%,category.ilike.%🔥%') 
       .order('created_at', { ascending: false });
 
@@ -28,10 +26,9 @@ const Diary = ({ onBack, supabase }) => {
   };
 
   useEffect(() => {
-    fetchDiaryEntries(); // 👈 Fixed name here
+    fetchDiaryEntries();
   }, [supabase]);
 
-  // --- 🚀 THE UPLINK ---
   const handleSave = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.content) return;
@@ -42,7 +39,7 @@ const Diary = ({ onBack, supabase }) => {
       .insert([{ 
         mission_name: formData.title,
         text: formData.content,
-        category: formData.mood // Saving mood to category
+        category: formData.mood 
       }]);
 
     if (error) {
@@ -50,7 +47,7 @@ const Diary = ({ onBack, supabase }) => {
     } else {
       setFormData({ title: '', content: '', mood: '😊 Happy' });
       setShowModal(false);
-      fetchDiaryEntries(); // 👈 Fixed name here
+      fetchDiaryEntries();
     }
     setLoading(false);
   };
@@ -58,65 +55,86 @@ const Diary = ({ onBack, supabase }) => {
   const deleteEntry = async (id) => {
     if (window.confirm("CONFIRM_ERASURE: Permanently delete from Maryland Cloud?")) {
       const { error } = await supabase.from('missions').delete().eq('id', id);
-      if (!error) fetchDiaryEntries(); // 👈 Fixed name here
+      if (!error) fetchDiaryEntries();
     }
   };
 
   return (
-    <div className="diary-wrapper p-4 bg-black text-white" style={{ minHeight: '80vh' }}>
-      <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-2">
-        <div>
-          <h2 className="text-info fw-bold mb-0" style={{ letterSpacing: '2px' }}>SECRET_DIARY.LOG</h2>
-          <small className="text-muted">STATUS: {loading ? 'SYNCING...' : 'ENCRYPTED'}</small>
-        </div>
-        <Button variant="outline-info" size="sm" onClick={() => setShowModal(true)}>+ NEW_ENTRY</Button>
-      </div>
-
-      <div className="diary-list">
-        {loading && entries.length === 0 ? (
-          <div className="text-center py-5"><Spinner animation="border" variant="info" /></div>
-        ) : entries.length === 0 ? (
-          <div className="text-center py-5">
-            <p className="text-muted italic">No data detected in Maryland Hub...</p>
+    <div className="diary-wrapper p-2 p-md-4 bg-black text-white" style={{ minHeight: '80vh' }}>
+      <Container fluid className="px-1">
+        
+        {/* 🛠️ RESPONSIVE HEADER: Title stacks on top of button on iPhone */}
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 border-bottom border-secondary pb-3 gap-3">
+          <div className="d-flex align-items-center">
+            <Button variant="outline-info" size="sm" className="me-2 me-md-3" onClick={onBack}>← BACK</Button>
+            <div>
+              <h2 className="text-info fw-bold mb-0" style={{ letterSpacing: '1px', fontSize: 'clamp(1.1rem, 5vw, 1.8rem)' }}>
+                SECRET_DIARY.LOG
+              </h2>
+              <small className="text-muted d-block" style={{ fontSize: '0.65rem' }}>
+                STATUS: {loading ? 'SYNCING...' : 'ENCRYPTED_UPLINK'}
+              </small>
+            </div>
           </div>
-        ) : (
-          entries.map((entry) => (
-            <Card key={entry.id} className="mb-3 bg-dark border-secondary text-white shadow-sm win-border">
-              <Card.Body style={{ backgroundColor: '#000' }}>
-                <div className="d-flex justify-content-between align-items-start">
-                  <h5 className="text-info mb-0">{entry.mission_name}</h5>
-                  <Badge bg="info" text="dark">{entry.category || 'Legacy'}</Badge>
-                </div>
-                <hr className="border-secondary my-2" />
-                <p className="small mb-3" style={{ whiteSpace: 'pre-wrap', opacity: 0.9 }}>{entry.text}</p>
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                  <small className="text-muted" style={{ fontSize: '0.65rem' }}>
-                    {new Date(entry.created_at).toLocaleString()}
-                  </small>
-                  <Button variant="link" className="text-danger p-0 small text-decoration-none" onClick={() => deleteEntry(entry.id)}>
-                    [ERASE]
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          ))
-        )}
-      </div>
+          <Button 
+            variant="info" 
+            size="sm" 
+            className="fw-bold px-3 py-2 shadow-sm" 
+            style={{ whiteSpace: 'nowrap' }}
+            onClick={() => setShowModal(true)}
+          >
+            + NEW_ENTRY
+          </Button>
+        </div>
 
-      {/* MODAL CODE REMAINS THE SAME */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered contentClassName="bg-dark text-white border-info win-border">
-        <Modal.Header closeButton closeVariant="white" className="border-secondary bg-black">
+        <div className="diary-list">
+          {loading && entries.length === 0 ? (
+            <div className="text-center py-5"><Spinner animation="border" variant="info" /></div>
+          ) : entries.length === 0 ? (
+            <div className="text-center py-5">
+              <p className="text-muted italic small">No data detected in Maryland Hub...</p>
+            </div>
+          ) : (
+            entries.map((entry) => (
+              <Card key={entry.id} className="mb-3 bg-dark border-secondary text-white shadow-sm win-border">
+                <Card.Body className="p-3" style={{ backgroundColor: '#000' }}>
+                  <div className="d-flex justify-content-between align-items-start gap-2">
+                    <h5 className="text-info mb-0 fw-bold" style={{ fontSize: '1rem' }}>{entry.mission_name}</h5>
+                    <Badge bg="info" text="dark" style={{ fontSize: '0.6rem' }}>{entry.category || 'LOG'}</Badge>
+                  </div>
+                  <hr className="border-secondary my-2" />
+                  <p className="small mb-3" style={{ whiteSpace: 'pre-wrap', opacity: 0.9, lineHeight: '1.4' }}>
+                    {entry.text}
+                  </p>
+                  <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
+                    <small className="text-muted" style={{ fontSize: '0.6rem' }}>
+                      {new Date(entry.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </small>
+                    <Button variant="link" className="text-danger p-0 small text-decoration-none" style={{ fontSize: '0.7rem' }} onClick={() => deleteEntry(entry.id)}>
+                      [ERASE_MEMORY]
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </div>
+      </Container>
+
+      {/* MODAL - Adjusted for Mobile width */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered contentClassName="bg-dark text-white border-info win-border mx-2">
+        <Modal.Header closeButton closeVariant="white" className="border-secondary bg-black p-2">
           <Modal.Title className="text-info small fw-bold">CREATE_NEW_LOG_ENTRY</Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSave}>
-          <Modal.Body className="bg-black">
+          <Modal.Body className="bg-black p-3">
             <Form.Group className="mb-3">
               <Form.Label className="text-info small">TITLE / OBJECTIVE</Form.Label>
-              <Form.Control className="bg-dark text-white border-secondary" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+              <Form.Control className="bg-dark text-white border-secondary small" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label className="text-info small">MOOD_PROTOCOL</Form.Label>
-              <Form.Select className="bg-dark text-white border-secondary" value={formData.mood} onChange={e => setFormData({...formData, mood: e.target.value})}>
+              <Form.Select className="bg-dark text-white border-secondary small" value={formData.mood} onChange={e => setFormData({...formData, mood: e.target.value})}>
                 <option>😊 Happy</option>
                 <option>🚀 Productive</option>
                 <option>🤔 Thoughtful</option>
@@ -126,11 +144,11 @@ const Diary = ({ onBack, supabase }) => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label className="text-info small">ENTRY_CONTENT</Form.Label>
-              <Form.Control as="textarea" rows={5} className="bg-dark text-white border-secondary" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} />
+              <Form.Control as="textarea" rows={6} className="bg-dark text-white border-secondary small" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} />
             </Form.Group>
           </Modal.Body>
-          <Modal.Footer className="border-secondary bg-black">
-            <Button variant="info" type="submit" className="w-100 fw-bold" disabled={loading}>COMMIT_TO_CLOUD</Button>
+          <Modal.Footer className="border-secondary bg-black p-2">
+            <Button variant="info" type="submit" className="w-100 fw-bold">COMMIT_TO_CLOUD</Button>
           </Modal.Footer>
         </Form>
       </Modal>
